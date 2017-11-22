@@ -19,7 +19,7 @@ def is_valid_syscoin_address(address, network='mainnet'):
     # 4 checksum bytes are appended so the total number of
     # base58 encoded bytes should be 25.  This means the number of characters
     # in the encoding should be about 34 ( 25 * log2( 256 ) / log2( 58 ) ).
-    syscoin_version = 111 if network == 'testnet' else 0
+    syscoin_version = 65 if network == 'testnet' else 0
 
     # Check length (This is important because the base58 library has problems
     # with long addresses (which are invalid anyway).
