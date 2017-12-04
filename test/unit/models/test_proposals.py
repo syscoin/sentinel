@@ -78,7 +78,6 @@ def proposal():
 
 
 def test_proposal_is_valid(proposal):
-    pytest.skip('Proposal not currently supported')
     from syscoind import SyscoinDaemon
     import syscoinlib
     syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
@@ -209,7 +208,6 @@ def test_proposal_is_valid(proposal):
 
 
 def test_proposal_is_expired(proposal):
-    pytest.skip('Proposal not currently supported')
     cycle = 24  # testnet
     now = misc.now()
 
@@ -226,7 +224,6 @@ def test_proposal_is_expired(proposal):
 
 
 def test_proposal_is_deletable(proposal):
-    pytest.skip('Proposal not currently supported')
     now = misc.now()
     assert proposal.is_deletable() is False
 
@@ -240,7 +237,6 @@ def test_proposal_is_deletable(proposal):
 
 # deterministic ordering
 def test_approved_and_ranked(go_list_proposals):
-    pytest.skip('Proposal not currently supported')
     from syscoind import SyscoinDaemon
     syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
 
