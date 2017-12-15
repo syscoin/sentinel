@@ -123,6 +123,7 @@ def superblock():
 
 
 def test_superblock_is_valid(superblock):
+    pytest.skip('Superblock not currently supported')
     from syscoind import SyscoinDaemon
     syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
 
@@ -201,6 +202,7 @@ def test_superblock_is_deletable(superblock):
 
 
 def test_serialisable_fields():
+    pytest.skip('Superblock not currently supported')
     s1 = ['event_block_height', 'payment_addresses', 'payment_amounts', 'proposal_hashes']
     s2 = Superblock.serialisable_fields()
 
@@ -211,6 +213,7 @@ def test_serialisable_fields():
 
 
 def test_deterministic_superblock_creation(go_list_proposals):
+    pytest.skip('Superblock not currently supported')
     import syscoinlib
     import misc
     from syscoind import SyscoinDaemon
@@ -231,6 +234,7 @@ def test_deterministic_superblock_creation(go_list_proposals):
 
 
 def test_deterministic_superblock_selection(go_list_superblocks):
+    pytest.skip('Superblock not currently supported')
     from syscoind import SyscoinDaemon
     syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
 

@@ -21,7 +21,7 @@ def test_syscoind():
         if line.startswith('testnet=1'):
             network = 'testnet'
             is_testnet = True
-            genesis_hash = u'00000790e2439c71e102414f0c42b1107ac1fd661b802577f502cc0720d86e73'
+            genesis_hash = u'0000080db17ee560bd9e8ece89d981820589a80455be965197d90e8a2641edbb'
 
     creds = SyscoinConfig.get_rpc_creds(config_text, network)
     syscoind = SyscoinDaemon(**creds)
