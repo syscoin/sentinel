@@ -67,11 +67,11 @@ To view debug output, set the `SENTINEL_DEBUG` environment variable to anything 
 
 ## Contributing
 
-Please follow the [SyscoinCore guidelines for contributing](https://github.com/syscoin/syscoin2/tree/dev-2.2/CONTRIBUTING.md).
+Please follow the [SyscoinCore guidelines for contributing]https://github.com/syscoin/syscoin3/blob/master/CONTRIBUTING.md).
 
 Specifically:
 
-* [Contributor Workflow](https://github.com/syscoin/syscoin2/tree/dev-2.2/CONTRIBUTING.md#contributor-workflow)
+* [Contributor Workflow](https://github.com/syscoin/syscoin3/blob/master/CONTRIBUTING.md#contributor-workflow)
 
     To contribute a patch, the workflow is as follows:
 
