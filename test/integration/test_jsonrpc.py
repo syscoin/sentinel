@@ -16,12 +16,12 @@ def test_syscoind():
     config_text = SyscoinConfig.slurp_config_file(config.syscoin_conf)
     network = 'mainnet'
     is_testnet = False
-    genesis_hash = u'00000ffd590b1485b3caadc19b22e6379c733355108f107a430458cdf3407ab6'
+    genesis_hash = u'0000006086e066c3e9df26340d6324982c031e1e8d37f66c2f4cb5d76a3db7da'
     for line in config_text.split("\n"):
         if line.startswith('testnet=1'):
             network = 'testnet'
             is_testnet = True
-            genesis_hash = u'0000080db17ee560bd9e8ece89d981820589a80455be965197d90e8a2641edbb'
+            genesis_hash = u'00000d070aa618e6549464d948b37e92df680312a38e22f4c14fa9e0c3ab494f'
 
     creds = SyscoinConfig.get_rpc_creds(config_text, network)
     syscoind = SyscoinDaemon(**creds)
