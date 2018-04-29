@@ -15,11 +15,14 @@ min_syscoind_proto_version_with_sentinel_ping = 70218
 
 
 def get_syscoin_conf():
-    home = os.environ.get('HOME')
+    if sys.platform == 'win32':
+        syscoin_conf = os.path.join(os.getenv('APPDATA'), "SyscoinCore/syscoin.conf")
+    else:
+        home = os.environ.get('HOME')
 
-    syscoin_conf = os.path.join(home, ".syscoincore/syscoin.conf")
-    if sys.platform == 'darwin':
-        syscoin_conf = os.path.join(home, "Library/Application Support/SyscoinCore/syscoin.conf")
+        syscoin_conf = os.path.join(home, ".syscoincore/syscoin.conf")
+        if sys.platform == 'darwin':
+            syscoin_conf = os.path.join(home, "Library/Application Support/SyscoinCore/syscoin.conf")
 
     syscoin_conf = sentinel_cfg.get('syscoin_conf', syscoin_conf)
 
@@ -28,6 +31,10 @@ def get_syscoin_conf():
 
 def get_network():
     return sentinel_cfg.get('network', 'mainnet')
+
+
+def get_rpchost():
+    return sentinel_cfg.get('rpchost', '127.0.0.1')
 
 
 def sqlite_test_db_name(sqlite_file_path):
@@ -81,4 +88,5 @@ def get_db_conn():
 
 syscoin_conf = get_syscoin_conf()
 network = get_network()
+rpc_host = get_rpchost()
 db = get_db_conn()

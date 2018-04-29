@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pytest
 import sys
 import os
@@ -66,9 +67,9 @@ def proposal():
     pobj = Proposal(
         start_epoch=1483250400,  # 2017-01-01
         end_epoch=2122520400,
-        name="test_test_proposal",
-        url="http://www.syscoin.org",
-        payment_address="TAoxDG4ZJQEZszPvatWb34teS3D3855RA9",
+        name="wine-n-cheeze-party",
+        url="https://syscoincentral.com/wine-n-cheeze-party",
+        payment_address="yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Ui",
         payment_amount=13
     )
 
@@ -127,6 +128,27 @@ def test_proposal_is_valid(proposal):
     proposal.name = 'R66-Y'
     assert proposal.is_valid() is True
 
+    proposal.name = 'valid-name'
+    assert proposal.is_valid() is True
+
+    proposal.name = '   mostly-valid-name'
+    assert proposal.is_valid() is False
+
+    proposal.name = 'also-mostly-valid-name   '
+    assert proposal.is_valid() is False
+
+    proposal.name = ' similarly-kinda-valid-name '
+    assert proposal.is_valid() is False
+
+    proposal.name = 'dean miller 5493'
+    assert proposal.is_valid() is False
+
+    proposal.name = 'dean-millerà-5493'
+    assert proposal.is_valid() is False
+
+    proposal.name = 'dean-миллер-5493'
+    assert proposal.is_valid() is False
+
     # binary gibberish
     proposal.name = syscoinlib.deserialise('22385c7530303933375c75303363375c75303232395c75303138635c75303064335c75303163345c75303264385c75303236615c75303134625c75303163335c75303063335c75303362385c75303266615c75303261355c75303266652f2b5c75303065395c75303164655c75303136655c75303338645c75303062385c75303138635c75303064625c75303064315c75303038325c75303133325c753032333222')
     assert proposal.is_valid() is False
@@ -140,10 +162,10 @@ def test_proposal_is_valid(proposal):
     proposal.payment_address = '7'
     assert proposal.is_valid() is False
 
-    proposal.payment_address = 'TAoxDG4ZJQEZszPvatWb34teS3D3855RA0'
+    proposal.payment_address = 'YYE8KWYAUU5YSWSYMB3Q3RYX8XTUU9Y7UI'
     assert proposal.is_valid() is False
 
-    proposal.payment_address = 'tAoxDG4ZJQEZszPvatWb34teS3D3855RA9'
+    proposal.payment_address = 'yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Uj'
     assert proposal.is_valid() is False
 
     proposal.payment_address = '221 B Baker St., London, United Kingdom'
@@ -153,8 +175,17 @@ def test_proposal_is_valid(proposal):
     proposal.payment_address = '7gnwGHt17heGpG9Crfeh4KGpYNFugPhJdh'
     assert proposal.is_valid() is False
 
-    proposal.payment_address = 'TAoxDG4ZJQEZszPvatWb34teS3D3855RA9'
+    proposal.payment_address = 'yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Ui'
     assert proposal.is_valid() is True
+
+    proposal.payment_address = ' yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Ui'
+    assert proposal.is_valid() is False
+
+    proposal.payment_address = 'yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Ui '
+    assert proposal.is_valid() is False
+
+    proposal.payment_address = ' yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Ui '
+    assert proposal.is_valid() is False
 
     # reset
     proposal = Proposal(**orig.get_dict())
@@ -167,6 +198,30 @@ def test_proposal_is_valid(proposal):
     assert proposal.is_valid() is False
 
     proposal.url = 'http://bit.ly/1e1EYJv'
+    assert proposal.is_valid() is True
+
+    proposal.url = ' http://bit.ly/1e1EYJv'
+    assert proposal.is_valid() is False
+
+    proposal.url = 'http://bit.ly/1e1EYJv '
+    assert proposal.is_valid() is False
+
+    proposal.url = ' http://bit.ly/1e1EYJv '
+    assert proposal.is_valid() is False
+
+    proposal.url = 'http://::12.34.56.78]/'
+    assert proposal.is_valid() is False
+
+    proposal.url = 'http://[::1/foo/bad]/bad'
+    assert proposal.is_valid() is False
+
+    proposal.url = 'http://syscoincentral.org/dean-miller 5493'
+    assert proposal.is_valid() is False
+
+    proposal.url = 'http://syscoincentralisé.org/dean-miller-5493'
+    assert proposal.is_valid() is True
+
+    proposal.url = 'http://syscoincentralisé.org/dean-миллер-5493'
     assert proposal.is_valid() is True
 
     proposal.url = 'https://example.com/resource.ext?param=1&other=2'
@@ -223,21 +278,8 @@ def test_proposal_is_expired(proposal):
     assert proposal.is_expired(superblockcycle=cycle) is True
 
 
-def test_proposal_is_deletable(proposal):
-    now = misc.now()
-    assert proposal.is_deletable() is False
-
-    proposal.end_epoch = now - (86400 * 29)
-    assert proposal.is_deletable() is False
-
-    # add a couple seconds for time variance
-    proposal.end_epoch = now - ((86400 * 30) + 2)
-    assert proposal.is_deletable() is True
-
-
 # deterministic ordering
 def test_approved_and_ranked(go_list_proposals):
-    pytest.skip('Proposal not completed on testnet')
     from syscoind import SyscoinDaemon
     syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
 
@@ -248,3 +290,25 @@ def test_approved_and_ranked(go_list_proposals):
 
     assert prop_list[0].object_hash == u'dfd7d63979c0b62456b63d5fc5306dbec451180adee85876cbf5b28c69d1a86c'
     assert prop_list[1].object_hash == u'0523445762025b2e01a2cd34f1d10f4816cf26ee1796167e5b029901e5873630'
+
+
+def test_proposal_size(proposal):
+    orig = Proposal(**proposal.get_dict())  # make a copy
+
+    proposal.url = 'https://testurl.com/'
+    proposal_length_bytes = len(proposal.serialise()) // 2
+
+    # how much space is available in the Proposal
+    extra_bytes = (Proposal.MAX_DATA_SIZE - proposal_length_bytes)
+
+    # fill URL field with max remaining space
+    proposal.url = proposal.url + ('x' * extra_bytes)
+
+    # ensure this is the max proposal size and is valid
+    assert (len(proposal.serialise()) // 2) == Proposal.MAX_DATA_SIZE
+    assert proposal.is_valid() is True
+
+    # add one more character to URL, Proposal should now be invalid
+    proposal.url = proposal.url + 'x'
+    assert (len(proposal.serialise()) // 2) == (Proposal.MAX_DATA_SIZE + 1)
+    assert proposal.is_valid() is False
