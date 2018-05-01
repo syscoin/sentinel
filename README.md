@@ -4,11 +4,11 @@ An all-powerful toolset for Syscoin.
 
 [![Build Status](https://travis-ci.org/syscoin/sentinel.svg?branch=master)](https://travis-ci.org/syscoin/sentinel)
 
-Sentinel is an autonomous agent for persisting, processing and automating the upcoming Syscoin 2.2 governance objects and tasks.
+Sentinel is an autonomous agent for persisting, processing and automating Syscoin governance objects and tasks, and for expanded functions in the upcoming Syscoin 3.0 release
 
-Sentinel is implemented as a Python application that binds to a local version 2.2 syscoind instance on each Syscoin 2.2 Masternode.
+Sentinel is implemented as a Python application that binds to a local version of syscoind instance on each Syscoin Masternode.
 
-This guide covers installing Sentinel onto an existing TESTNET 2.2 Masternode in Ubuntu 14.04 / 16.04.
+This guide covers installing Sentinel onto an existing Masternode in Ubuntu 14.04 / 16.04.
 
 ## Installation
 
@@ -23,9 +23,9 @@ Update system packages and ensure virtualenv is installed:
     $ sudo apt-get update
     $ sudo apt-get -y install python-virtualenv
 
-Make sure the local Syscoin daemon running is at least version 2.2 (sysversion 2.2.0)
+Make sure the local Syscoin daemon running is at least version 3.0
 
-    $ syscoin-cli getinfo | grep sysversion
+    $ syscoin-cli getinfo | grep version
 
 ### 2. Install Sentinel
 
@@ -67,11 +67,11 @@ To view debug output, set the `SENTINEL_DEBUG` environment variable to anything 
 
 ## Contributing
 
-Please follow the [SyscoinCore guidelines for contributing]https://github.com/syscoin/syscoin3/blob/master/CONTRIBUTING.md).
+Please follow the [SyscoinCore guidelines for contributing](https://github.com/syscoin/syscoin/blob/master/CONTRIBUTING.md).
 
 Specifically:
 
-* [Contributor Workflow](https://github.com/syscoin/syscoin3/blob/master/CONTRIBUTING.md#contributor-workflow)
+* [Contributor Workflow](https://github.com/syscoin/syscoin/blob/master/CONTRIBUTING.md#contributor-workflow)
 
     To contribute a patch, the workflow is as follows:
 
@@ -85,4 +85,4 @@ Specifically:
 
 ### License
 
-Released under the MIT license, under the same terms as Syscoin itself. See [LICENSE](LICENSE) for more info.
+Released under the MIT license, under the same terms as SyscoinCore itself. See [LICENSE](LICENSE) for more info.

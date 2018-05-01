@@ -7,12 +7,12 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), '../../
 
 @pytest.fixture
 def valid_syscoin_address(network='mainnet'):
-    return 'TYuTHt44PFRVBucxe1SpT83mxxM66TBky7' if (network == 'testnet') else '16Zo9KWLPAPHs7V8UFbPwV5694X4mEiroR'
+    return 'yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Ui' if (network == 'testnet') else 'XpjStRH8SgA6PjgebtPZqCa9y7hLXP767n'
 
 
 @pytest.fixture
 def invalid_syscoin_address(network='mainnet'):
-    return 'TYuTHt44PFRVBucxe1SpT83mxxM66TBky8' if (network == 'testnet') else '16Zo9KWLPAPHs7V8UFbPwV5694X4mEiroS'
+    return 'yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Uj' if (network == 'testnet') else 'XpjStRH8SgA6PjgebtPZqCa9y7hLXP767m'
 
 
 @pytest.fixture
@@ -122,8 +122,8 @@ def test_parse_masternode_status_vin():
 
 def test_hash_function():
     import syscoinlib
-    sb_data_hex = '5b227375706572626c6f636b222c207b226576656e745f626c6f636b5f686569676874223a2037323639362c20227061796d656e745f616464726573736573223a2022795965384b77796155753559737753596d42337133727978385854557539793755697c795965384b77796155753559737753596d4233713372797838585455753979375569222c20227061796d656e745f616d6f756e7473223a202232352e37353030303030307c32352e3735303030303030227d5d'
-    sb_hash = '5c7c28ddec8c1ad54b49f6f1e79369e7ccaf76f5ddc30e502569d674e458ccf3'
+    sb_data_hex = '7b226576656e745f626c6f636b5f686569676874223a2037323639362c20227061796d656e745f616464726573736573223a2022795965384b77796155753559737753596d42337133727978385854557539793755697c795965384b77796155753559737753596d4233713372797838585455753979375569222c20227061796d656e745f616d6f756e7473223a202232352e37353030303030307c32352e3735303030303030222c202274797065223a20327d'
+    sb_hash = '7ae8b02730113382ea75cbb1eecc497c3aa1fdd9e76e875e38617e07fb2cb21a'
 
     hex_hash = "%x" % syscoinlib.hashit(sb_data_hex)
     assert hex_hash == sb_hash

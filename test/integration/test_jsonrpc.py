@@ -16,12 +16,12 @@ def test_syscoind():
     config_text = SyscoinConfig.slurp_config_file(config.syscoin_conf)
     network = 'mainnet'
     is_testnet = False
-    genesis_hash = u'0000006086e066c3e9df26340d6324982c031e1e8d37f66c2f4cb5d76a3db7da'
+    genesis_hash = u'00000ffd590b1485b3caadc19b22e6379c733355108f107a430458cdf3407ab6'
     for line in config_text.split("\n"):
         if line.startswith('testnet=1'):
             network = 'testnet'
             is_testnet = True
-            genesis_hash = u'00000d070aa618e6549464d948b37e92df680312a38e22f4c14fa9e0c3ab494f'
+            genesis_hash = u'00000bafbc94add76cb75e2ec92894837288a481e5c005f6563d91623bf8bc2c'
 
     creds = SyscoinConfig.get_rpc_creds(config_text, network)
     syscoind = SyscoinDaemon(**creds)
@@ -29,7 +29,7 @@ def test_syscoind():
 
     assert hasattr(syscoind, 'rpc_connection')
 
-    # Syscoin testnet block 0 hash == 00000790e2439c71e102414f0c42b1107ac1fd661b802577f502cc0720d86e73
+    # Syscoin testnet block 0 hash == 00000bafbc94add76cb75e2ec92894837288a481e5c005f6563d91623bf8bc2c
     # test commands without arguments
     info = syscoind.rpc_command('getinfo')
     info_keys = [

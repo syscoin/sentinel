@@ -6,7 +6,7 @@ import init
 import config
 import misc
 from syscoind import SyscoinDaemon
-from models import Superblock, Proposal, GovernanceObject, Watchdog
+from models import Superblock, Proposal, GovernanceObject
 from models import VoteSignals, VoteOutcomes, Transient
 import socket
 from misc import printdbg
@@ -22,42 +22,6 @@ import argparse
 # sync syscoind gobject list with our local relational DB backend
 def perform_syscoind_object_sync(syscoind):
     GovernanceObject.sync(syscoind)
-
-
-# delete old watchdog objects, create new when necessary
-def watchdog_check(syscoind):
-    printdbg("in watchdog_check")
-
-    # delete expired watchdogs
-    for wd in Watchdog.expired(syscoind):
-        printdbg("\tFound expired watchdog [%s], voting to delete" % wd.object_hash)
-        wd.vote(syscoind, VoteSignals.delete, VoteOutcomes.yes)
-
-    # now, get all the active ones...
-    active_wd = Watchdog.active(syscoind)
-    active_count = active_wd.count()
-
-    # none exist, submit a new one to the network
-    if 0 == active_count:
-        # create/submit one
-        printdbg("\tNo watchdogs exist... submitting new one.")
-        wd = Watchdog(created_at=int(time.time()))
-        wd.submit(syscoind)
-
-    else:
-        wd_list = sorted(active_wd, key=lambda wd: wd.object_hash)
-
-        # highest hash wins
-        winner = wd_list.pop()
-        printdbg("\tFound winning watchdog [%s], voting VALID" % winner.object_hash)
-        winner.vote(syscoind, VoteSignals.valid, VoteOutcomes.yes)
-
-        # if remaining Watchdogs exist in the list, vote delete
-        for wd in wd_list:
-            printdbg("\tFound losing watchdog [%s], voting DELETE" % wd.object_hash)
-            wd.vote(syscoind, VoteSignals.delete, VoteOutcomes.yes)
-
-    printdbg("leaving watchdog_check")
 
 
 def prune_expired_proposals(syscoind):
@@ -110,7 +74,8 @@ def attempt_superblock_creation(syscoind):
     budget_max = syscoind.get_superblock_budget_allocation(event_block_height)
     sb_epoch_time = syscoind.block_height_to_epoch(event_block_height)
 
-    sb = syscoinlib.create_superblock(proposals, event_block_height, budget_max, sb_epoch_time)
+    maxgovobjdatasize = syscoind.govinfo['maxgovobjdatasize']
+    sb = syscoinlib.create_superblock(proposals, event_block_height, budget_max, sb_epoch_time, maxgovobjdatasize)
     if not sb:
         printdbg("No superblock created, sorry. Returning.")
         return
@@ -207,9 +172,6 @@ def main():
 
     if syscoind.has_sentinel_ping:
         sentinel_ping(syscoind)
-    else:
-        # delete old watchdog objects, create a new if necessary
-        watchdog_check(syscoind)
 
     # auto vote network objects as valid/invalid
     # check_object_validity(syscoind)
