@@ -7,12 +7,12 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), '../../
 
 @pytest.fixture
 def valid_syscoin_address(network='mainnet'):
-    return 'yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Ui' if (network == 'testnet') else 'XpjStRH8SgA6PjgebtPZqCa9y7hLXP767n'
+    return 'TSFMFYoPjz9xg9fUYXxxWEeEDCQ3qSH1aJ' if (network == 'testnet') else 'SZKgggyzWqmJFcafSyLykhsYKfuQ13idQu'
 
 
 @pytest.fixture
 def invalid_syscoin_address(network='mainnet'):
-    return 'yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Uj' if (network == 'testnet') else 'XpjStRH8SgA6PjgebtPZqCa9y7hLXP767m'
+    return 'TSFMFYoPjz9xg9fUYXxxWEeEDCQ3qSH1aK' if (network == 'testnet') else 'SZKgggyzWqmJFcafSyLykhsYKfuQ13idQv'
 
 
 @pytest.fixture
