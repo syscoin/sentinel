@@ -95,7 +95,7 @@ def go_list_superblocks():
         {u'AbsoluteYesCount': 1,
          u'AbstainCount': 0,
          u'CollateralHash': u'0000000000000000000000000000000000000000000000000000000000000000',
-         u'DataHex': u'5b5b2274726967676572222c207b226576656e745f626c6f636b5f686569676874223a2037323639362c20227061796d656e745f616464726573736573223a2022795965384b77796155753559737753596d42337133727978385854557539793755697c795965384b77796155753559737753596d4233713372797838585455753979375569222c20227061796d656e745f616d6f756e7473223a202232352e37353030303030307c32352e3735303030303030222c202274797065223a20327d5d5d',
+         u'DataHex': u'5b5b2274726967676572222c207b226576656e745f626c6f636b5f686569676874223a2037323639362c20227061796d656e745f616464726573736573223a202254535466654d65577751694344774d53545752616a39777756474e6a5a466676466b7c54535466654d65577751694344774d53545752616a39777756474e6a5a466676466b222c20227061796d656e745f616d6f756e7473223a202232352e37353030303030307c32352e3735303030303030222c202274797065223a20327d5d5d',
          u'DataString': u'[["trigger", {"event_block_height": 72696, "payment_addresses": "TSTfeMeWwQiCDwMSTWRaj9wwVGNjZFfvFk|TSTfeMeWwQiCDwMSTWRaj9wwVGNjZFfvFk", "payment_amounts": "25.75000000|25.75000000", "type": 2}]]',
          u'Hash': u'bc2834f357da7504138566727c838e6ada74d079e63b6104701f4f8eb05dae36',
          u'IsValidReason': u'',
@@ -244,7 +244,7 @@ def test_deterministic_superblock_creation(go_list_proposals):
     assert sb.payment_amounts == '25.75000000|32.01000000'
     assert sb.proposal_hashes == 'dfd7d63979c0b62456b63d5fc5306dbec451180adee85876cbf5b28c69d1a86c|0523445762025b2e01a2cd34f1d10f4816cf26ee1796167e5b029901e5873630'
 
-    assert sb.hex_hash() == 'bb3f33ccf95415c396bd09d35325dbcbc7b067010d51c7ccf772a9e839c1e414'
+    assert sb.hex_hash() == '1503598424dddb4aa78f0f0ffddc9371386c9692ab35f8f82065672d5d94f870'
 
 
 def test_superblock_size_limit(go_list_proposals):
@@ -270,7 +270,7 @@ def test_superblock_size_limit(go_list_proposals):
     assert sb.payment_amounts == '25.75000000'
     assert sb.proposal_hashes == 'dfd7d63979c0b62456b63d5fc5306dbec451180adee85876cbf5b28c69d1a86c'
 
-    assert sb.hex_hash() == '6b8cababf797644f1d62003e4cc68c1c40a8c1873c8a68ed0fc88772ea77cc44'
+    assert sb.hex_hash() == 'c30d2f26ffbe9a3d234f301c1a8a568a29096963d4b7ac1bdc3b15479592b0d3'
 
 
 def test_deterministic_superblock_selection(go_list_superblocks):
@@ -281,5 +281,5 @@ def test_deterministic_superblock_selection(go_list_superblocks):
         (go, subobj) = GovernanceObject.import_gobject_from_syscoind(syscoind, item)
 
     # highest hash wins if same -- so just order by hash
-    sb = Superblock.find_highest_deterministic('542f4433e438bdd64697b8381fda1a7a9b7a111c3a4e32fad524d1821d820394')
+    sb = Superblock.find_highest_deterministic('3fe3938349a350469670348adf9ebd2e8023b7ebe65ecbb87837cfa74ca8bbfa')
     assert sb.object_hash == 'bc2834f357da7504138566727c838e6ada74d079e63b6104701f4f8eb05dae36'
