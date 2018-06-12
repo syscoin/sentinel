@@ -9,17 +9,21 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), '../../
 def valid_syscoin_address(network='mainnet'):
     return 'TSFMFYoPjz9xg9fUYXxxWEeEDCQ3qSH1aJ' if (network == 'testnet') else 'SZKgggyzWqmJFcafSyLykhsYKfuQ13idQu'
 
+
 @pytest.fixture
 def invalid_syscoin_address(network='mainnet'):
     return 'TSFMFYoPjz9xg9fUYXxxWEeEDCQ3qSH1aK' if (network == 'testnet') else 'SZKgggyzWqmJFcafSyLykhsYKfuQ13idQv'
+
 
 @pytest.fixture
 def valid_bitcoin_address(network='mainnet'):
     return 'mwo6YYWeQHUGJ65TfqHcp1ARAQFSargf7y' if (network == 'testnet') else '1D2gerCqnUa6jJoCuYMuCoiyftfyDtZ5Y6'
 
+
 @pytest.fixture
 def invalid_bitcoin_address(network='mainnet'):
     return 'mwo6YYWeQHUGJ65TfqHcp1ARAQFSargf7z' if (network == 'testnet') else '1D2gerCqnUa6jJoCuYMuCoiyftfyDtZ5Y7'
+
 
 @pytest.fixture
 def current_block_hash():
