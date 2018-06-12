@@ -40,7 +40,7 @@ def is_valid_syscoin_address(address, network='mainnet'):
         # rescue from exception, not a valid Syscoin address
         return False
 
-    if (address_version != syscoin_version && address_version != bitcoin_version):
+    if (address_version != syscoin_version and address_version != bitcoin_version):
         return False
 
     return True
