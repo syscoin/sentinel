@@ -147,7 +147,7 @@ class SyscoinDaemon():
 
     def is_govobj_maturity_phase(self):
         # 3-day period for govobj maturity
-        maturity_phase_delta = 1662      # ~(60*24*3)/2.6
+        maturity_phase_delta = 4320      # ~(60*24*3)
         if config.network == 'testnet':
             maturity_phase_delta = 24    # testnet
 

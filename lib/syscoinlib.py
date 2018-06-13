@@ -19,7 +19,12 @@ def is_valid_syscoin_address(address, network='mainnet'):
     # 4 checksum bytes are appended so the total number of
     # base58 encoded bytes should be 25.  This means the number of characters
     # in the encoding should be about 34 ( 25 * log2( 256 ) / log2( 58 ) ).
-    syscoin_version = 65 if network == 'testnet' else 0
+
+    # Support syscoin address (T-address on testnet and S-address on mainnet)
+    syscoin_version = 65 if network == 'testnet' else 63
+
+    # Support bitcoin address (m-address or n-address on testnet and 1-address on mainnet)
+    bitcoin_version = 111 if network == 'testnet' else 0
 
     # Check length (This is important because the base58 library has problems
     # with long addresses (which are invalid anyway).
@@ -35,7 +40,7 @@ def is_valid_syscoin_address(address, network='mainnet'):
         # rescue from exception, not a valid Syscoin address
         return False
 
-    if (address_version != syscoin_version):
+    if (address_version != syscoin_version and address_version != bitcoin_version):
         return False
 
     return True
@@ -289,4 +294,4 @@ def blocks_to_seconds(blocks):
     Return the estimated number of seconds which will transpire for a given
     number of blocks.
     """
-    return blocks * 2.62 * 60
+    return blocks * 60
