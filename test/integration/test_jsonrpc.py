@@ -31,21 +31,16 @@ def test_syscoind():
 
     # Syscoin testnet block 0 hash == 00000bafbc94add76cb75e2ec92894837288a481e5c005f6563d91623bf8bc2c
     # test commands without arguments
-    info = syscoind.rpc_command('getinfo')
+    info = syscoind.rpc_command('getblockchaininfo')
     info_keys = [
+        'chain',
         'blocks',
-        'connections',
-        'difficulty',
-        'errors',
-        'protocolversion',
-        'proxy',
-        'testnet',
-        'timeoffset',
-        'version',
+        'headers',
+        'difficulty'
     ]
     for key in info_keys:
         assert key in info
-    assert info['testnet'] is is_testnet
+    assert info['chain'] is (is_testnet ? "testnet" : "main")
 
     # test commands with args
     assert syscoind.rpc_command('getblockhash', 0) == genesis_hash
