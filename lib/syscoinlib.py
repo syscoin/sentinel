@@ -21,8 +21,7 @@ def is_valid_syscoin_address(address, network='mainnet'):
         if witver is not None:
             return True
     except:
-        # rescue from exception, not a valid Syscoin bech32 address
-        return False
+        address_version = None
 
     # Only public key addresses are allowed
     # A valid address is a RIPEMD-160 hash which contains 20 bytes
