@@ -16,7 +16,7 @@ def is_valid_syscoin_address(address, network='mainnet'):
 
     # bech32
     try:
-        syscoin_hrp = "ts" if network == 'testnet' else "sc"
+        syscoin_hrp = "tsys" if network == 'testnet' else "sys"
         witver, _ = segwit_addr.decode(syscoin_hrp, address)
         if witver is not None:
             return True
