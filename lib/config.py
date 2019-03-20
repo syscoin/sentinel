@@ -11,7 +11,7 @@ default_sentinel_config = os.path.normpath(
 sentinel_config_file = os.environ.get('SENTINEL_CONFIG', default_sentinel_config)
 sentinel_cfg = SyscoinConfig.tokenize(sentinel_config_file)
 sentinel_version = 1000000
-min_syscoind_proto_version_with_sentinel_ping = 70404
+min_syscoind_proto_version_with_sentinel_ping = 70015
 
 
 def get_syscoin_conf():
