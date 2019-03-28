@@ -30,18 +30,9 @@ def prune_expired_proposals(syscoind):
         proposal.vote(syscoind, VoteSignals.delete, VoteOutcomes.yes)
 
 
-# ping syscoind
-def sentinel_ping(syscoind):
-    printdbg("in sentinel_ping")
-
-    syscoind.ping()
-
-    printdbg("leaving sentinel_ping")
-
-
 def attempt_superblock_creation(syscoind):
     import syscoinlib
-
+    
     if not syscoind.is_masternode():
         print("We are not a Masternode... can't submit superblocks!")
         return
@@ -170,9 +161,12 @@ def main():
     # load "gobject list" rpc command data, sync objects into internal database
     perform_syscoind_object_sync(syscoind)
 
+<<<<<<< HEAD
     if syscoind.has_sentinel_ping:
         sentinel_ping(syscoind)
 
+=======
+>>>>>>> b29ec61... Remove sentinel ping functionality (#64)
     # auto vote network objects as valid/invalid
     # check_object_validity(syscoind)
 

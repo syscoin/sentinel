@@ -212,11 +212,3 @@ class SyscoinDaemon():
                 raise e
 
         return epoch
-
-    @property
-    def has_sentinel_ping(self):
-        getinfo = self.rpc_command('getnetworkinfo')
-        return (getinfo['protocolversion'] >= config.min_syscoind_proto_version_with_sentinel_ping)
-
-    def ping(self):
-        self.rpc_command('sentinelping', config.sentinel_version)
