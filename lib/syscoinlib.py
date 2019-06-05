@@ -10,9 +10,19 @@ import simplejson
 import binascii
 from misc import printdbg, epoch2str
 import time
-
+import segwit_addr
 
 def is_valid_syscoin_address(address, network='mainnet'):
+
+    # bech32
+    try:
+        syscoin_hrp = "tsys" if network == 'testnet' else "sys"
+        witver, _ = segwit_addr.decode(syscoin_hrp, address)
+        if witver is not None:
+            return True
+    except:
+        address_version = None
+
     # Only public key addresses are allowed
     # A valid address is a RIPEMD-160 hash which contains 20 bytes
     # Prior to base58 encoding 1 version byte is prepended and
@@ -22,9 +32,6 @@ def is_valid_syscoin_address(address, network='mainnet'):
 
     # Support syscoin address (T-address on testnet and S-address on mainnet)
     syscoin_version = 65 if network == 'testnet' else 63
-
-    # Support bitcoin address (m-address or n-address on testnet and 1-address on mainnet)
-    bitcoin_version = 111 if network == 'testnet' else 0
 
     # Check length (This is important because the base58 library has problems
     # with long addresses (which are invalid anyway).
@@ -40,7 +47,7 @@ def is_valid_syscoin_address(address, network='mainnet'):
         # rescue from exception, not a valid Syscoin address
         return False
 
-    if (address_version != syscoin_version and address_version != bitcoin_version):
+    if (address_version != syscoin_version):
         return False
 
     return True

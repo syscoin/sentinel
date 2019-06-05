@@ -10,19 +10,19 @@ default_sentinel_config = os.path.normpath(
 )
 sentinel_config_file = os.environ.get('SENTINEL_CONFIG', default_sentinel_config)
 sentinel_cfg = SyscoinConfig.tokenize(sentinel_config_file)
-sentinel_version = "1.1.1"
-min_syscoind_proto_version_with_sentinel_ping = 70221
+sentinel_version = 1000000
+min_syscoind_proto_version_with_sentinel_ping = 70015
 
 
 def get_syscoin_conf():
     if sys.platform == 'win32':
-        syscoin_conf = os.path.join(os.getenv('APPDATA'), "SyscoinCore/syscoin.conf")
+        syscoin_conf = os.path.join(os.getenv('APPDATA'), "Syscoin/syscoin.conf")
     else:
         home = os.environ.get('HOME')
 
-        syscoin_conf = os.path.join(home, ".syscoincore/syscoin.conf")
+        syscoin_conf = os.path.join(home, ".syscoin/syscoin.conf")
         if sys.platform == 'darwin':
-            syscoin_conf = os.path.join(home, "Library/Application Support/SyscoinCore/syscoin.conf")
+            syscoin_conf = os.path.join(home, "Library/Application Support/Syscoin/syscoin.conf")
 
     syscoin_conf = sentinel_cfg.get('syscoin_conf', syscoin_conf)
 
