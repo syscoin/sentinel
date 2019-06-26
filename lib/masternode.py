@@ -31,7 +31,7 @@ class Masternode():
         # mn_full_out = mn_full_out.strip()
 
         (status, protocol, address, lastseen, activeseconds, lastpaid,
-         lastpaidblock, ip_port) = mn_full_out.split()
+         lastpaidblock, ip_port, pingretries) = mn_full_out.split()
 
         # status protocol pubkey IP lastseen activeseconds lastpaid
         return (status, protocol, address, ip_port, lastseen, activeseconds, lastpaid)
