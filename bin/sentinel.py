@@ -161,12 +161,6 @@ def main():
     # load "gobject list" rpc command data, sync objects into internal database
     perform_syscoind_object_sync(syscoind)
 
-<<<<<<< HEAD
-    if syscoind.has_sentinel_ping:
-        sentinel_ping(syscoind)
-
-=======
->>>>>>> b29ec61... Remove sentinel ping functionality (#64)
     # auto vote network objects as valid/invalid
     # check_object_validity(syscoind)
 
