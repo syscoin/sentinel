@@ -23,9 +23,13 @@ Update system packages and ensure virtualenv is installed:
     $ sudo apt-get update
     $ sudo apt-get -y install python-virtualenv
 
-Make sure the local Syscoin daemon running is at least version 3.0
+Or for python3
 
-    $ syscoin-cli getinfo | grep version
+    $ sudo apt-get -y install python3-virtualenv
+
+Make sure the local Syscoin daemon running is at least version 4.2
+
+    $ syscoind --version 
 
 ### 2. Install Sentinel
 
