@@ -8,13 +8,16 @@ class Masternode():
         self.txid = txid
         self.vout_index = int(vout_index)
 
-        (status, address, ip_port, lastpaid) = self.parse_mn_string(mnstring)
+        (status, protocol, address, ip_port, lastseen, activeseconds, lastpaid) = self.parse_mn_string(mnstring)
         self.status = status
+        self.protocol = int(protocol)
         self.address = address
 
         # TODO: break this out... take ipv6 into account
         self.ip_port = ip_port
 
+        self.lastseen = int(lastseen)
+        self.activeseconds = int(activeseconds)
         self.lastpaid = int(lastpaid)
 
     @classmethod
@@ -24,10 +27,14 @@ class Masternode():
 
     @classmethod
     def parse_mn_string(self, mn_full_out):
-        (status, address, lastpaid, lastpaidblock, ip_port) = mn_full_out.split()
+        # trim whitespace
+        # mn_full_out = mn_full_out.strip()
 
-        # status protocol pubkey IP lastpaid
-        return (status, address, ip_port, lastpaid)
+        (status, protocol, address, lastseen, activeseconds, lastpaid,
+         lastpaidblock, ip_port, pingretries) = mn_full_out.split()
+
+        # status protocol pubkey IP lastseen activeseconds lastpaid
+        return (status, protocol, address, ip_port, lastseen, activeseconds, lastpaid)
 
     @property
     def vin(self):

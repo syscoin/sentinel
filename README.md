@@ -1,65 +1,53 @@
 # Syscoin Sentinel
 
+An all-powerful toolset for Syscoin.
+
 [![Build Status](https://travis-ci.org/syscoin/sentinel.svg?branch=master)](https://travis-ci.org/syscoin/sentinel)
 
-> An automated governance helper for Syscoin Masternodes.
+Sentinel is an autonomous agent for persisting, processing and automating Syscoin governance objects and tasks, and for expanded functions in the upcoming Syscoin 3.0 release
 
-Sentinel is an autonomous agent for persisting, processing and automating Syscoin governance objects and tasks. It is a Python application which runs alongside the Syscoin instance on each Syscoin Masternode.
+Sentinel is implemented as a Python application that binds to a local version of syscoind instance on each Syscoin Masternode.
 
-## Table of Contents
-- [Install](#install)
-  - [Dependencies](#dependencies)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Troubleshooting](#troubleshooting)
-- [Maintainer](#maintainer)
-- [Contributing](#contributing)
-- [License](#license)
+This guide covers installing Sentinel onto an existing Masternode in Ubuntu 14.04 / 16.04.
 
-## Install
+## Installation
 
-These instructions cover installing Sentinel on Ubuntu 18.04 / 20.04.
+### 1. Install Prerequisites
 
-### Dependencies
+Make sure Python version 2.7.x or above is installed:
 
-Update system package list and install dependencies:
+    python --version
+
+Update system packages and ensure virtualenv is installed:
 
     $ sudo apt-get update
-    $ sudo apt-get -y install git python3 virtualenv
+    $ sudo apt-get -y install python-virtualenv
 
-Make sure Python version 3.6.x or above is installed:
+Make sure the local Syscoin daemon running is at least version 3.0
 
-    python3 --version
+    $ syscoin-cli getinfo | grep version
 
-Make sure the local Syscoin daemon running is at least version 0.15.0.
-
-    $ syscoind --version | head -n1
-
-### Install Sentinel
+### 2. Install Sentinel
 
 Clone the Sentinel repo and install Python dependencies.
 
     $ git clone https://github.com/syscoin/sentinel.git && cd sentinel
-    $ virtualenv -p $(which python3) ./venv
+    $ virtualenv ./venv
     $ ./venv/bin/pip install -r requirements.txt
 
-## Usage
-
-Sentinel is "used" as a script called from cron every minute.
-
-### Set up Cron
+### 3. Set up Cron
 
 Set up a crontab entry to call Sentinel every minute:
 
     $ crontab -e
 
-In the crontab editor, add the lines below, replacing '/path/to/sentinel' to the path where you cloned sentinel to:
+In the crontab editor, add the lines below, replacing '/home/YOURUSERNAME/sentinel' to the path where you cloned sentinel to:
 
-    * * * * * cd /path/to/sentinel && ./venv/bin/python bin/sentinel.py >/dev/null 2>&1
+    */2 * * * * cd /home/YOURUSERNAME/sentinel && ./venv/bin/python bin/sentinel.py >/dev/null 2>&1
 
-### Test Configuration
+### 4. Test the Configuration
 
-Test the config by running tests:
+Test the config by runnings all tests from the sentinel folder you cloned into
 
     $ ./venv/bin/py.test ./test
 
@@ -77,13 +65,9 @@ To view debug output, set the `SENTINEL_DEBUG` environment variable to anything 
 
     $ SENTINEL_DEBUG=1 ./venv/bin/python bin/sentinel.py
 
-## Maintainer
-
-[@sidhujag](https://github.com/sidhujag)
-
 ## Contributing
 
-Please follow the [Syscoin guidelines for contributing](https://github.com/syscoin/syscoin/blob/master/CONTRIBUTING.md).
+Please follow the [SyscoinCore guidelines for contributing](https://github.com/syscoin/syscoin/blob/master/CONTRIBUTING.md).
 
 Specifically:
 
@@ -99,6 +83,6 @@ Specifically:
 
     Commit messages should be verbose by default, consisting of a short subject line (50 chars max), a blank line and detailed explanatory text as separate paragraph(s); unless the title alone is self-explanatory (like "Corrected typo in main.cpp") then a single title line is sufficient. Commit messages should be helpful to people reading your code in the future, so explain the reasoning for your decisions. Further explanation [here](http://chris.beams.io/posts/git-commit/).
 
-## License
+### License
 
-Released under the MIT license, under the same terms as Syscoin itself. See [LICENSE](LICENSE) for more info.
+Released under the MIT license, under the same terms as SyscoinCore itself. See [LICENSE](LICENSE) for more info.

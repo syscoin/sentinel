@@ -235,7 +235,9 @@ def test_deterministic_superblock_creation(go_list_proposals):
     max_budget = 60
     prop_list = Proposal.approved_and_ranked(proposal_quorum=1, next_superblock_max_budget=max_budget)
 
-    sb = syscoinlib.create_superblock(prop_list, 72000, max_budget, misc.now())
+    # MAX_GOVERNANCE_OBJECT_DATA_SIZE defined in governance-object.h
+    maxgovobjdatasize = 16 * 1024
+    sb = syscoinlib.create_superblock(prop_list, 72000, max_budget, misc.now(), maxgovobjdatasize)
 
     assert sb.event_block_height == 72000
     assert sb.payment_addresses == 'TSTfeMeWwQiCDwMSTWRaj9wwVGNjZFfvFk|TEjMnhB5mAPrpg7R4CUCSGQNnJqPeAFBTH'
@@ -243,6 +245,32 @@ def test_deterministic_superblock_creation(go_list_proposals):
     assert sb.proposal_hashes == 'dfd7d63979c0b62456b63d5fc5306dbec451180adee85876cbf5b28c69d1a86c|0523445762025b2e01a2cd34f1d10f4816cf26ee1796167e5b029901e5873630'
 
     assert sb.hex_hash() == '1503598424dddb4aa78f0f0ffddc9371386c9692ab35f8f82065672d5d94f870'
+
+
+def test_superblock_size_limit(go_list_proposals):
+    import syscoinlib
+    import misc
+    from syscoind import SyscoinDaemon
+    syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
+    for item in go_list_proposals:
+        (go, subobj) = GovernanceObject.import_gobject_from_syscoind(syscoind, item)
+
+    max_budget = 60
+    prop_list = Proposal.approved_and_ranked(proposal_quorum=1, next_superblock_max_budget=max_budget)
+
+    maxgovobjdatasize = 469
+    sb = syscoinlib.create_superblock(prop_list, 72000, max_budget, misc.now(), maxgovobjdatasize)
+
+    # two proposals in the list, but...
+    assert len(prop_list) == 2
+
+    # only one should have been included in the SB, because the 2nd one is over the limit
+    assert sb.event_block_height == 72000
+    assert sb.payment_addresses == 'TSTfeMeWwQiCDwMSTWRaj9wwVGNjZFfvFk'
+    assert sb.payment_amounts == '25.75000000'
+    assert sb.proposal_hashes == 'dfd7d63979c0b62456b63d5fc5306dbec451180adee85876cbf5b28c69d1a86c'
+
+    assert sb.hex_hash() == 'c30d2f26ffbe9a3d234f301c1a8a568a29096963d4b7ac1bdc3b15479592b0d3'
 
 
 def test_deterministic_superblock_selection(go_list_superblocks):

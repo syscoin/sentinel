@@ -1,9 +1,9 @@
 #!/bin/bash
 set -evx
 
-mkdir ~/.syscoin
+mkdir ~/.syscoincore
 
 # safety check
-if [ ! -f ~/.syscoin/.syscoin.conf ]; then
-  cp share/syscoin.conf.example ~/.syscoin/syscoin.conf
+if [ ! -f ~/.syscoincore/.syscoin.conf ]; then
+  cp share/syscoin.conf.example ~/.syscoincore/syscoin.conf
 fi

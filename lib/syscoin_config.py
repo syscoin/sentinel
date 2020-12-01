@@ -15,7 +15,7 @@ class SyscoinConfig():
         f = io.open(filename)
         lines = []
         for line in f:
-            if re.match(r'^\s*#', line):
+            if re.match('^\s*#', line):
                 continue
             lines.append(line)
         f.close()
