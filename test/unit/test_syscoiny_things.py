@@ -14,6 +14,7 @@ def valid_syscoin_address(network='mainnet'):
 def invalid_syscoin_address(network='mainnet'):
     return 'TSFMFYoPjz9xg9fUYXxxWEeEDCQ3qSH1aK' if (network == 'testnet') else 'SZKgggyzWqmJFcafSyLykhsYKfuQ13idQv'
 
+
 @pytest.fixture
 def current_block_hash():
     return '000001c9ba1df5a1c58a4e458fb6febfe9329b1947802cd60a4ae90dd754b534'
@@ -71,6 +72,7 @@ def test_valid_syscoin_address():
     assert is_valid_syscoin_address(test) is False
     assert is_valid_syscoin_address(test, 'mainnet') is False
     assert is_valid_syscoin_address(test, 'testnet') is True
+
 
 def test_invalid_syscoin_address():
     from syscoinlib import is_valid_syscoin_address
