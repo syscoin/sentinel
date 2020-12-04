@@ -77,7 +77,7 @@ class GovernanceObject(BaseModel):
     # sync syscoind gobject list with our local relational DB backend
     @classmethod
     def sync(self, syscoind):
-        golist = syscoind.rpc_command('gobject', 'list')
+        golist = syscoind.rpc_command('gobject_list')
 
         # objects which are removed from the network should be removed from the DB
         try:
@@ -176,7 +176,7 @@ class GovernanceObject(BaseModel):
         return
 
     def get_vote_command(self, signal, outcome):
-        cmd = ['gobject', 'vote-conf', self.object_hash,
+        cmd = ['gobject_vote_conf', self.object_hash,
                signal.name, outcome.name]
         return cmd
 

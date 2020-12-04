@@ -46,7 +46,7 @@ class SyscoinDaemon():
     # common RPC convenience methods
 
     def get_masternodes(self):
-        mnlist = self.rpc_command('masternodelist', 'full')
+        mnlist = self.rpc_command('masternode_list', 'full')
         return [Masternode(k, v) for (k, v) in mnlist.items()]
 
     def get_current_masternode_vin(self):
@@ -55,7 +55,7 @@ class SyscoinDaemon():
         my_vin = None
 
         try:
-            status = self.rpc_command('masternode', 'status')
+            status = self.rpc_command('masternode_status')
             mn_outpoint = status.get('outpoint') or status.get('vin')
             my_vin = parse_masternode_status_vin(mn_outpoint)
         except JSONRPCException as e:
@@ -65,7 +65,7 @@ class SyscoinDaemon():
 
     def governance_quorum(self):
         # TODO: expensive call, so memoize this
-        total_masternodes = self.rpc_command('masternode', 'count', 'enabled')
+        total_masternodes = self.rpc_command('masternode_count')['enabled']
         min_quorum = self.govinfo['governanceminquorum']
 
         # the minimum quorum is calculated based on the number of masternodes
@@ -133,7 +133,7 @@ class SyscoinDaemon():
 
             (txid, vout_index) = my_vin.split('-')
 
-            cmd = ['gobject', 'getcurrentvotes', object_hash, txid, vout_index]
+            cmd = ['gobject_getcurrentvotes', object_hash, txid, vout_index]
             raw_votes = self.rpc_command(*cmd)
             self.gobject_votes[object_hash] = syscoinlib.parse_raw_votes(raw_votes)
 
