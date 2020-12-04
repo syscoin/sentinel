@@ -14,17 +14,6 @@ def valid_syscoin_address(network='mainnet'):
 def invalid_syscoin_address(network='mainnet'):
     return 'TSFMFYoPjz9xg9fUYXxxWEeEDCQ3qSH1aK' if (network == 'testnet') else 'SZKgggyzWqmJFcafSyLykhsYKfuQ13idQv'
 
-
-@pytest.fixture
-def valid_bitcoin_address(network='mainnet'):
-    return 'mwo6YYWeQHUGJ65TfqHcp1ARAQFSargf7y' if (network == 'testnet') else '1D2gerCqnUa6jJoCuYMuCoiyftfyDtZ5Y6'
-
-
-@pytest.fixture
-def invalid_bitcoin_address(network='mainnet'):
-    return 'mwo6YYWeQHUGJ65TfqHcp1ARAQFSargf7z' if (network == 'testnet') else '1D2gerCqnUa6jJoCuYMuCoiyftfyDtZ5Y7'
-
-
 @pytest.fixture
 def current_block_hash():
     return '000001c9ba1df5a1c58a4e458fb6febfe9329b1947802cd60a4ae90dd754b534'
@@ -76,8 +65,6 @@ def test_valid_syscoin_address():
 
     main = valid_syscoin_address()
     test = valid_syscoin_address('testnet')
-    main_btc = valid_bitcoin_address()
-    test_btc = valid_bitcoin_address('testnet')
 
     assert is_valid_syscoin_address(main) is True
     assert is_valid_syscoin_address(main, 'mainnet') is True
@@ -87,22 +74,11 @@ def test_valid_syscoin_address():
     assert is_valid_syscoin_address(test, 'mainnet') is False
     assert is_valid_syscoin_address(test, 'testnet') is True
 
-    assert is_valid_syscoin_address(main_btc) is True
-    assert is_valid_syscoin_address(main_btc, 'mainnet') is True
-    assert is_valid_syscoin_address(main_btc, 'testnet') is False
-
-    assert is_valid_syscoin_address(test_btc) is False
-    assert is_valid_syscoin_address(test_btc, 'mainnet') is False
-    assert is_valid_syscoin_address(test_btc, 'testnet') is True
-
-
 def test_invalid_syscoin_address():
     from syscoinlib import is_valid_syscoin_address
 
     main = invalid_syscoin_address()
     test = invalid_syscoin_address('testnet')
-    main_btc = invalid_bitcoin_address()
-    test_btc = invalid_bitcoin_address('testnet')
 
     assert is_valid_syscoin_address(main) is False
     assert is_valid_syscoin_address(main, 'mainnet') is False
@@ -111,14 +87,6 @@ def test_invalid_syscoin_address():
     assert is_valid_syscoin_address(test) is False
     assert is_valid_syscoin_address(test, 'mainnet') is False
     assert is_valid_syscoin_address(test, 'testnet') is False
-
-    assert is_valid_syscoin_address(main_btc) is False
-    assert is_valid_syscoin_address(main_btc, 'mainnet') is False
-    assert is_valid_syscoin_address(main_btc, 'testnet') is False
-
-    assert is_valid_syscoin_address(test_btc) is False
-    assert is_valid_syscoin_address(test_btc, 'mainnet') is False
-    assert is_valid_syscoin_address(test_btc, 'testnet') is False
 
 
 def test_deterministic_masternode_elections(current_block_hash, mn_list):
