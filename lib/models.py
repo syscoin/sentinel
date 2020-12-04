@@ -361,10 +361,7 @@ class Proposal(GovernanceClass, BaseModel):
 
         # half the SB cycle, converted to seconds
         # add the fudge_window in seconds, defined elsewhere in Sentinel
-        expiration_window_seconds = int(
-            (syscoinlib.blocks_to_seconds(superblockcycle) / 2) +
-            SUPERBLOCK_FUDGE_WINDOW
-        )
+        expiration_window_seconds = int((syscoinlib.blocks_to_seconds(superblockcycle) / 2) + SUPERBLOCK_FUDGE_WINDOW)
         printdbg("\texpiration_window_seconds = %s" % expiration_window_seconds)
 
         # "fully expires" adds the expiration window to end time to ensure a
