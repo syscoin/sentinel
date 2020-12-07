@@ -38,7 +38,7 @@ class GovernanceClass(object):
         obj_data = self.serialise()
 
         # new objects won't have parent_hash, revision, etc...
-        cmd = ['gobject_submit', '0', '1', str(int(time.time())), obj_data]
+        cmd = ['gobject_submit', 0, 1, str(int(time.time())), obj_data]
 
         # some objects don't have a collateral tx to submit
         if not self.only_masternode_can_submit:
