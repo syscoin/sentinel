@@ -94,13 +94,7 @@ class SyscoinDaemon():
         return not (self.get_current_masternode_vin() is None)
 
     def is_synced(self):
-        mnsync_status = self.rpc_command('mnsync', 'status')
-        synced = (mnsync_status['IsBlockchainSynced'] and
-                  mnsync_status['IsMasternodeListSynced'] and
-                  mnsync_status['IsWinnersListSynced'] and
-                  mnsync_status['IsSynced'] and
-                  not mnsync_status['IsFailed'])
-        return synced
+        return self.rpc_command('mnsync', 'status')['IsSynced']
 
     def current_block_hash(self):
         height = self.rpc_command('getblockcount')
@@ -146,7 +140,7 @@ class SyscoinDaemon():
         return self.gobject_votes[object_hash]
 
     def is_govobj_maturity_phase(self):
-        # 3-day period for govobj maturity
+        # SYSCOIN 3-day period for govobj maturity
         maturity_phase_delta = 4320      # ~(60*24*3)
         if config.network == 'testnet':
             maturity_phase_delta = 24    # testnet
@@ -216,11 +210,3 @@ class SyscoinDaemon():
                 raise e
 
         return epoch
-
-    @property
-    def has_sentinel_ping(self):
-        getinfo = self.rpc_command('getnetworkinfo')
-        return (getinfo['protocolversion'] >= config.min_syscoind_proto_version_with_sentinel_ping)
-
-    def ping(self):
-        self.rpc_command('sentinelping', config.sentinel_version)

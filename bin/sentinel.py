@@ -30,15 +30,6 @@ def prune_expired_proposals(syscoind):
         proposal.vote(syscoind, VoteSignals.delete, VoteOutcomes.yes)
 
 
-# ping syscoind
-def sentinel_ping(syscoind):
-    printdbg("in sentinel_ping")
-
-    syscoind.ping()
-
-    printdbg("leaving sentinel_ping")
-
-
 def attempt_superblock_creation(syscoind):
     import syscoinlib
 
@@ -74,8 +65,7 @@ def attempt_superblock_creation(syscoind):
     budget_max = syscoind.get_superblock_budget_allocation(event_block_height)
     sb_epoch_time = syscoind.block_height_to_epoch(event_block_height)
 
-    maxgovobjdatasize = syscoind.govinfo['maxgovobjdatasize']
-    sb = syscoinlib.create_superblock(proposals, event_block_height, budget_max, sb_epoch_time, maxgovobjdatasize)
+    sb = syscoinlib.create_superblock(proposals, event_block_height, budget_max, sb_epoch_time)
     if not sb:
         printdbg("No superblock created, sorry. Returning.")
         return
@@ -125,6 +115,11 @@ def main():
     syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
     options = process_args()
 
+    # print version and return if "--version" is an argument
+    if options.version:
+        print("Syscoin Sentinel v%s" % config.sentinel_version)
+        return
+
     # check syscoind connectivity
     if not is_syscoind_port_open(syscoind):
         print("Cannot connect to syscoind. Please ensure syscoind is running and the JSONRPC port is open to Sentinel.")
@@ -170,9 +165,6 @@ def main():
     # load "gobject list" rpc command data, sync objects into internal database
     perform_syscoind_object_sync(syscoind)
 
-    if syscoind.has_sentinel_ping:
-        sentinel_ping(syscoind)
-
     # auto vote network objects as valid/invalid
     # check_object_validity(syscoind)
 
@@ -202,6 +194,10 @@ def process_args():
                         action='store_true',
                         help='Bypass scheduler and sync/vote immediately',
                         dest='bypass')
+    parser.add_argument('-v', '--version',
+                        action='store_true',
+                        help='Print the version (Syscoin Sentinel vX.X.X) and exit')
+
     args = parser.parse_args()
 
     return args
