@@ -1,5 +1,5 @@
 # basically just parse & make it easier to access the MN data from the output of
-# "masternodelist full"
+# "masternode_list full"
 
 
 class Masternode():

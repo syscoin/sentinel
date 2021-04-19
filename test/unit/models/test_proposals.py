@@ -215,13 +215,13 @@ def test_proposal_is_valid(proposal):
     proposal.url = 'http://[::1/foo/bad]/bad'
     assert proposal.is_valid() is False
 
-    proposal.url = 'http://syscoincentral.org/dean-miller 5493'
+    proposal.url = 'http://dashcentral.org/dean-miller 5493'
     assert proposal.is_valid() is False
 
-    proposal.url = 'http://syscoincentralisé.org/dean-miller-5493'
+    proposal.url = 'http://dashcentralisé.org/dean-miller-5493'
     assert proposal.is_valid() is True
 
-    proposal.url = 'http://syscoincentralisé.org/dean-миллер-5493'
+    proposal.url = 'http://dashcentralisé.org/dean-миллер-5493'
     assert proposal.is_valid() is True
 
     proposal.url = 'https://example.com/resource.ext?param=1&other=2'

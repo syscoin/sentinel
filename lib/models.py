@@ -77,7 +77,7 @@ class GovernanceObject(BaseModel):
     # sync syscoind gobject list with our local relational DB backend
     @classmethod
     def sync(self, syscoind):
-        golist = syscoind.rpc_command('gobject', 'list')
+        golist = syscoind.rpc_command('gobject_list')
 
         # objects which are removed from the network should be removed from the DB
         try:
@@ -176,7 +176,7 @@ class GovernanceObject(BaseModel):
         return
 
     def get_vote_command(self, signal, outcome):
-        cmd = ['gobject', 'vote-conf', self.object_hash,
+        cmd = ['gobject_vote_conf', self.object_hash,
                signal.name, outcome.name]
         return cmd
 
@@ -361,10 +361,7 @@ class Proposal(GovernanceClass, BaseModel):
 
         # half the SB cycle, converted to seconds
         # add the fudge_window in seconds, defined elsewhere in Sentinel
-        expiration_window_seconds = int(
-            (syscoinlib.blocks_to_seconds(superblockcycle) / 2) +
-            SUPERBLOCK_FUDGE_WINDOW
-        )
+        expiration_window_seconds = int((syscoinlib.blocks_to_seconds(superblockcycle) / 2) + SUPERBLOCK_FUDGE_WINDOW)
         printdbg("\texpiration_window_seconds = %s" % expiration_window_seconds)
 
         # "fully expires" adds the expiration window to end time to ensure a

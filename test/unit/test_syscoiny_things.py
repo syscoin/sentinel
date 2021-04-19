@@ -16,16 +16,6 @@ def invalid_syscoin_address(network='mainnet'):
 
 
 @pytest.fixture
-def valid_bitcoin_address(network='mainnet'):
-    return 'mwo6YYWeQHUGJ65TfqHcp1ARAQFSargf7y' if (network == 'testnet') else '1D2gerCqnUa6jJoCuYMuCoiyftfyDtZ5Y6'
-
-
-@pytest.fixture
-def invalid_bitcoin_address(network='mainnet'):
-    return 'mwo6YYWeQHUGJ65TfqHcp1ARAQFSargf7z' if (network == 'testnet') else '1D2gerCqnUa6jJoCuYMuCoiyftfyDtZ5Y7'
-
-
-@pytest.fixture
 def current_block_hash():
     return '000001c9ba1df5a1c58a4e458fb6febfe9329b1947802cd60a4ae90dd754b534'
 
@@ -33,13 +23,11 @@ def current_block_hash():
 @pytest.fixture
 def mn_list():
     from masternode import Masternode
-
     masternodelist_full = {
-        u'701854b26809343704ab31d1c45abc08f9f83c5c2bd503a9d5716ef3c0cda857-1': u'  ENABLED 70201 TSTfeMeWwQiCDwMSTWRaj9wwVGNjZFfvFk 1474157572    82842 1474152618  71111 52.90.74.124:19999',
-        u'f68a2e5d64f4a9be7ff8d0fbd9059dcd3ce98ad7a19a9260d1d6709127ffac56-1': u'  ENABLED 70201 TEjMnhB5mAPrpg7R4CUCSGQNnJqPeAFBTH 1474157732  1590425 1474155175  71122 [2604:a880:800:a1::9b:0]:19999',
-        u'656695ed867e193490261bea74783f0a39329ff634a10a9fb6f131807eeca744-1': u'  ENABLED 70201 TWMtv2QwPcYVUEoLgbBJdHYoPrv3tj7rA3 1474157704   824622 1474152571  71110 178.62.203.249:19999',
+        u'701854b26809343704ab31d1c45abc08f9f83c5c2bd503a9d5716ef3c0cda857-1': u'  ENABLED TSTfeMeWwQiCDwMSTWRaj9wwVGNjZFfvFk 1474157572   71111  52.90.74.124:19999',
+        u'f68a2e5d64f4a9be7ff8d0fbd9059dcd3ce98ad7a19a9260d1d6709127ffac56-1': u'  ENABLED TEjMnhB5mAPrpg7R4CUCSGQNnJqPeAFBTH 1474157732   71122  [2604:a880:800:a1::9b:0]:19999',
+        u'656695ed867e193490261bea74783f0a39329ff634a10a9fb6f131807eeca744-1': u'  ENABLED TWMtv2QwPcYVUEoLgbBJdHYoPrv3tj7rA3 1474157704   71110  178.62.203.249:19999',
     }
-
     mnlist = [Masternode(vin, mnstring) for (vin, mnstring) in masternodelist_full.items()]
 
     return mnlist
@@ -76,8 +64,6 @@ def test_valid_syscoin_address():
 
     main = valid_syscoin_address()
     test = valid_syscoin_address('testnet')
-    main_btc = valid_bitcoin_address()
-    test_btc = valid_bitcoin_address('testnet')
 
     assert is_valid_syscoin_address(main) is True
     assert is_valid_syscoin_address(main, 'mainnet') is True
@@ -87,22 +73,12 @@ def test_valid_syscoin_address():
     assert is_valid_syscoin_address(test, 'mainnet') is False
     assert is_valid_syscoin_address(test, 'testnet') is True
 
-    assert is_valid_syscoin_address(main_btc) is True
-    assert is_valid_syscoin_address(main_btc, 'mainnet') is True
-    assert is_valid_syscoin_address(main_btc, 'testnet') is False
-
-    assert is_valid_syscoin_address(test_btc) is False
-    assert is_valid_syscoin_address(test_btc, 'mainnet') is False
-    assert is_valid_syscoin_address(test_btc, 'testnet') is True
-
 
 def test_invalid_syscoin_address():
     from syscoinlib import is_valid_syscoin_address
 
     main = invalid_syscoin_address()
     test = invalid_syscoin_address('testnet')
-    main_btc = invalid_bitcoin_address()
-    test_btc = invalid_bitcoin_address('testnet')
 
     assert is_valid_syscoin_address(main) is False
     assert is_valid_syscoin_address(main, 'mainnet') is False
@@ -111,14 +87,6 @@ def test_invalid_syscoin_address():
     assert is_valid_syscoin_address(test) is False
     assert is_valid_syscoin_address(test, 'mainnet') is False
     assert is_valid_syscoin_address(test, 'testnet') is False
-
-    assert is_valid_syscoin_address(main_btc) is False
-    assert is_valid_syscoin_address(main_btc, 'mainnet') is False
-    assert is_valid_syscoin_address(main_btc, 'testnet') is False
-
-    assert is_valid_syscoin_address(test_btc) is False
-    assert is_valid_syscoin_address(test_btc, 'mainnet') is False
-    assert is_valid_syscoin_address(test_btc, 'testnet') is False
 
 
 def test_deterministic_masternode_elections(current_block_hash, mn_list):
