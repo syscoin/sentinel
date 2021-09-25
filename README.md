@@ -31,7 +31,7 @@ Make sure Python version 3.6.x or above is installed:
 
     python3 --version
 
-Make sure the local Syscoin daemon running is at least version 4.2.0.
+Make sure the local Syscoin daemon running is at least version 4.3.0.
 
     $ syscoind --version | head -n1
 
