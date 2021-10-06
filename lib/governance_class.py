@@ -37,7 +37,7 @@ class GovernanceClass(object):
     def get_submit_command(self):
         obj_data = self.serialise()
 
-        # new objects won't have parent_hash, revision, etc...
+        # new objects won't have parent_hash, revision, etc. Match specs of gobject_submit in core regarding data types.
         cmd = ['gobject_submit', '0', 1, int(time.time()), obj_data]
 
         # some objects don't have a collateral tx to submit
