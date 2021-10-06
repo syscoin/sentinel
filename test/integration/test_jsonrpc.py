@@ -40,7 +40,7 @@ def test_syscoind():
     ]
     for key in info_keys:
         assert key in info
-    assert info['chain'] is ("testnet" if is_testnet else "main")
+    assert info['chain'] is ("test" if is_testnet else "main")
 
     # test commands with args
     assert syscoind.rpc_command('getblockhash', 0) == genesis_hash
