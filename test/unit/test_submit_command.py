@@ -23,10 +23,9 @@ def superblock():
 
 def test_submit_command(superblock):
     cmd = superblock.get_submit_command()
-
     assert re.match(r'^gobject_submit$', cmd[0]) is not None
     assert re.match(r'^[\da-f]+$', cmd[1]) is not None
-    assert re.match(r'^[\da-f]+$', cmd[2]) is not None
+    assert re.match(r'^[\d]+$', cmd[2]) is not None
     assert re.match(r'^[\d]+$', cmd[3]) is not None
     assert re.match(r'^[\w-]+$', cmd[4]) is not None
 
