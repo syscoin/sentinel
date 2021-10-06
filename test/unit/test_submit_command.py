@@ -10,7 +10,6 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), '../../
 @pytest.fixture
 def superblock():
     from models import Superblock
-    # NOTE: no governance_object_id is set
     sbobj = Superblock(
         event_block_height=62500,
         payment_addresses='yYe8KwyaUu5YswSYmB3q3ryx8XTUu9y7Ui|yTC62huR4YQEPn9AJHjnQxxreHSbgAoatV',
