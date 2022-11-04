@@ -7,10 +7,11 @@ RUN git clone ${SENTINEL_REPO}
 RUN cd sentinel && virtualenv -p $(which python3) venv
 RUN cd sentinel && venv/bin/python -m pip install --upgrade pip
 RUN cd sentinel && venv/bin/pip install -r requirements.txt
+RUN cd sentinel && chmod +x bin/sentinel.py
 #write out current crontab
 RUN crontab -l > mycron
 #echo new cron into cron file
-RUN echo "* * * * * cd sentinel && ./venv/bin/python bin/sentinel.py 2>&1 >> sentinel-cron.log" >> mycron
+RUN echo "* * * * * cd /sentinel && ./venv/bin/python bin/sentinel.py 2>&1 >> sentinel-cron.log" >> mycron
 #install new cron file
 RUN crontab mycron
 RUN rm mycron
@@ -34,6 +35,7 @@ RUN apk --no-cache add \
 
 RUN echo $'cd sentinel && nohup venv/bin/python bin/sentinel.py --server &' >> sys.sh
 RUN echo $'mkdir -p ${SYSCOIN_DATA}/testnet3/geth/keystore/' >> sys.sh
+RUN echo $'/usr/sbin/crond' >> sys.sh
 RUN echo $'syscoind --testnet --addnode=3.143.67.237 --datadir=${SYSCOIN_DATA} --disablewallet \
 	--gethcommandline=--http \
 	--gethcommandline=--http.corsdomain="*" \
