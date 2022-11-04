@@ -77,6 +77,28 @@ To view debug output, set the `SENTINEL_DEBUG` environment variable to anything 
 
     $ SENTINEL_DEBUG=1 ./venv/bin/python bin/sentinel.py
 
+## PoDA
+To run PoDA fill out the 3 environment variables inside of tananbaum-up.sh (for testnet) from your cloudflare R2 account:
+PODA_DB_ACCOUNT_ID=
+PODA_DB_KEY_ID=
+PODA_DB_ACCESS_KEY=
+
+Then simply run:
+
+    $ make tanenbaum-up
+
+To shutdown:
+    $ make tanenbaum-down
+
+To cleanup:
+    $ make tanenbaum-clean
+
+This will start syscoind, sync it up, and setup a cronjob internally to push PoDA blobs to R2 which rollups can use. It will also start a server which allows you to request PoDA blobs via a versionhash. It is running on port 80 that is accessible by localhost (you may serve this to the web).
+
+Format for fetching (example):
+    $ https://localhost/vh/01155b5f6fc6aad6e3551301462fa27748553cc75a64841ae7beaf335713ccb8
+    where `01155b5f6fc6aad6e3551301462fa27748553cc75a64841ae7beaf335713ccb8` is the versionhash of a blob.
+
 ## Maintainer
 
 [@sidhujag](https://github.com/sidhujag)
