@@ -279,5 +279,4 @@ def blocks_to_seconds(blocks):
     Return the estimated number of seconds which will transpire for a given
     number of blocks.
     """
-    # SYSCOIN
-    return blocks * 60
+    return blocks * 2.62 * 60
