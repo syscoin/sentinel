@@ -17,7 +17,7 @@ import atexit
 import random
 from scheduler import Scheduler
 import argparse
-
+from aiohttp import web
 
 # sync syscoind gobject list with our local relational DB backend
 def perform_syscoind_object_sync(syscoind):
@@ -90,6 +90,22 @@ def attempt_superblock_creation(syscoind):
         printdbg("we are the winner! Submit SB to network")
         sb.submit(syscoind)
 
+def attempt_poda_submission(syscoind):
+    import config
+    if config.poda_db_account_id == '':
+        printdbg("PoDA DB Account ID not set.")
+        return
+    if config.poda_db_key_id == '':
+        printdbg("PoDA DB Key ID not set.")
+        return
+    if config.poda_db_access_key == '':
+        printdbg("PoDA DB Access Key not set.")
+        return
+    try:
+        # fill PoDA by processing all blocks missing
+        config.poda_payload.send_blobs(syscoind)
+    except JSONRPCException as e:
+        print("Unable to send PoDA: %s" % e.message)
 
 def check_object_validity(syscoind):
     # vote (in)valid objects
@@ -110,6 +126,14 @@ def is_syscoind_port_open(syscoind):
 
     return port_open
 
+async def handle(request):
+    vh = request.match_info.get('vh')
+    return web.Response(text=config.poda_payload.get_data(vh))
+
+def poda_server_loop():
+    app = web.Application()
+    app.add_routes([web.get('/vh/{vh}', handle)])
+    web.run_app(app)
 
 def main():
     syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
@@ -119,7 +143,9 @@ def main():
     if options.version:
         print("Syscoin Sentinel v%s" % config.sentinel_version)
         return
-
+    if options.server:
+        poda_server_loop()
+        return
     # check syscoind connectivity
     if not is_syscoind_port_open(syscoind):
         print("Cannot connect to syscoind. Please ensure syscoind is running and the JSONRPC port is open to Sentinel.")
@@ -130,9 +156,12 @@ def main():
         print("syscoind not synced with network! Awaiting full sync before running Sentinel.")
         return
 
+    # send PoDA if configured
+    attempt_poda_submission(syscoind)
+
     # ensure valid masternode
     if not syscoind.is_masternode():
-        print("Invalid Masternode Status, cannot continue.")
+        printdbg("Invalid Masternode Status, cannot continue.")
         return
 
     # register a handler if SENTINEL_DEBUG is set
@@ -194,6 +223,10 @@ def process_args():
                         action='store_true',
                         help='Bypass scheduler and sync/vote immediately',
                         dest='bypass')
+    parser.add_argument('-s', '--server',
+                        action='store_true',
+                        help='PoDA server',
+                        dest='server')                    
     parser.add_argument('-v', '--version',
                         action='store_true',
                         help='Print the version (Syscoin Sentinel vX.X.X) and exit')

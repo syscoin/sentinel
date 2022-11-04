@@ -4,6 +4,7 @@
 import sys
 import os
 from syscoin_config import SyscoinConfig
+from poda_payload import PoDAPayload 
 
 default_sentinel_config = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '../sentinel.conf')
@@ -29,8 +30,19 @@ def get_syscoin_conf():
 
 
 def get_network():
+    envNetwork = os.environ.get('NETWORK', '')
+    if envNetwork != '':
+        return envNetwork
     return sentinel_cfg.get('network', 'mainnet')
 
+def get_poda_db_account_id():
+    return os.environ.get('PODA_DB_ACCOUNT_ID')
+
+def get_poda_db_key_id():
+    return os.environ.get('PODA_DB_KEY_ID')
+
+def get_poda_db_access_key():
+    return os.environ.get('PODA_DB_ACCESS_KEY')
 
 def get_rpchost():
     return sentinel_cfg.get('rpchost', '127.0.0.1')
@@ -89,3 +101,7 @@ syscoin_conf = get_syscoin_conf()
 network = get_network()
 rpc_host = get_rpchost()
 db = get_db_conn()
+poda_db_account_id = get_poda_db_account_id()
+poda_db_key_id = get_poda_db_key_id()
+poda_db_access_key = get_poda_db_access_key()
+poda_payload = PoDAPayload(poda_db_account_id, poda_db_key_id, poda_db_access_key)

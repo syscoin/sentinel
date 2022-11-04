@@ -1,6 +1,8 @@
+aiohttp==3.8.3
+bitcoinrpc==0.5.0
+boto3==1.26.2
+botocore==1.29.2
 peewee==2.8.3
-py==1.4.31
-pycodestyle==2.4.0
 pytest==3.0.1
-python-bitcoinrpc==1.0
+python_bitcoinrpc==1.0
 simplejson==3.8.2

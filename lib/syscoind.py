@@ -16,8 +16,8 @@ import time
 class SyscoinDaemon():
     def __init__(self, **kwargs):
         host = kwargs.get('host', '127.0.0.1')
-        user = kwargs.get('user')
-        password = kwargs.get('password')
+        user = kwargs.get('user', 'u')
+        password = kwargs.get('password', 'p')
         port = kwargs.get('port')
 
         self.creds = (user, password, host, port)
