@@ -22,7 +22,7 @@ class PoDAPayload():
             )
 
     @classmethod
-    def get_local_vh(self, vh):
+    def get_local_block_processed(self, vh):
         import peewee
         from models import Setting
         try:
@@ -33,11 +33,9 @@ class PoDAPayload():
         return True
 
     @classmethod
-    def set_local_vh(self, vh, height):
+    def set_local_block_processed(self, blockhash):
         from models import Setting
-        localvh_setting, created = Setting.get_or_create(name=vh)
-        localvh_setting.value = height
-        localvh_setting.save()
+        Setting.get_or_create(name=blockhash)
 
     @classmethod
     def get_last_block(self):
@@ -75,7 +73,6 @@ class PoDAPayload():
             latestBlock = syscoind.rpc_command('getblock', latestHash)
             medianTimeTip = latestBlock.get('mediantime')
             mediantime = medianTimeTip
-            height = latestBlock.get('height')
             # loop over 7 hours from tip or until lastblock_height whichever is first
             while True:
                 # if prevCL - 7 hours for this block or if no prevCL then 7 hours from tip or if gateway's last block then break
@@ -88,25 +85,33 @@ class PoDAPayload():
                 if latestBlock.get('hash') == lastblockhash:
                     print("Found last block hash during traversal: %s" % lastblockhash)
                     break
-                # get txids and check PoDA
-                items = latestBlock.get('tx')
-                for txid in items:
-                    try:
-                        blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True)  
-                        vh = blobresponse.get('versionhash')
-                        if self.get_local_vh(vh) is True:
+                # only process blocks that have not been processed already
+                if self.get_local_block_processed(latestHash) is False:
+                    # get txids and check PoDA
+                    items = latestBlock.get('tx')
+                    for txid in items:
+                        try:
+                            blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True)  
+                            try:
+                                print("checking PoDA txid {0} {1}".format(txid, self.bucketname))
+                                self.s3.Object(self.bucketname, blobresponse.get('versionhash')).load()
+                            except botocore.exceptions.ClientError as e:
+                                if e.response['Error']['Code'] == "404":
+                                    print("Found PoDA txid! storing in db: %s" % blobresponse.get('versionhash'))
+                                    # send to DB backend
+                                    object = self.s3.Object(self.bucketname, blobresponse.get('versionhash'))
+                                    result = object.put(Body=blobresponse.get('data'))
+                                    res = result.get('ResponseMetadata')
+                                    if res.get('HTTPStatusCode') != 200:
+                                        print('Blob Not Uploaded')
+                                        return
+                                    pass
+                                else:
+                                    # Something else has gone wrong.
+                                    print("Unable to check for vh existance from backend: %s" % e.message)
+                                    raise
+                        except JSONRPCException:
                             continue
-                        print("Found PoDA txid! storing in db: %s" % vh)
-                        # send to DB backend
-                        object = self.s3.Object(self.bucketname,vh)
-                        result = object.put(Body=blobresponse.get('data'))
-                        res = result.get('ResponseMetadata')
-                        if res.get('HTTPStatusCode') != 200:
-                            print('Blob Not Uploaded')
-                            return
-                        self.set_local_vh(vh, height)
-                    except JSONRPCException:
-                        continue
                 # used to check against last cached block to know when to stop processing
                 latestBlock = syscoind.rpc_command('getblock', latestBlock.get('previousblockhash'))
                 # need to be able to detect MTP is 7 hours old from tip to know when to stop processing
@@ -114,7 +119,8 @@ class PoDAPayload():
         except JSONRPCException as e:
             print("Unable to fetch latest block: %s" % e.message)
         # processed block and stored in DB so set it in cache so we can continue on from here on subsequent cycles
-        self.set_last_block(latestHash) 
+        self.set_last_block(latestHash)
+        self.set_local_block_processed(latestHash)
 
     @classmethod
     def get_data(self, vh):
