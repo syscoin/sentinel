@@ -4,20 +4,17 @@ FROM alpine:3.15
 ARG SENTINEL_REPO=https://github.com/syscoin/sentinel.git
 RUN apk add --no-cache gcc musl-dev linux-headers git python3 py-virtualenv rust
 RUN git clone ${SENTINEL_REPO}
-RUN cd sentinel && virtualenv -p $(which python3) $PWD/venv
-RUN cd sentinel && $PWD/venv/bin/python -m pip install --upgrade pip
-RUN cd sentinel && $PWD/venv/bin/pip install -r requirements.txt
-#remove cron if exists
-RUN crontab -l | grep -v "\* \* \* \* \* $PWD/venv/bin/python $PWD/bin/sentinel.py" | crontab -
+RUN cd sentinel && virtualenv -p $(which python3) venv
+RUN cd sentinel && venv/bin/python -m pip install --upgrade pip
+RUN cd sentinel && venv/bin/pip install -r requirements.txt
 #write out current crontab
 RUN crontab -l > mycron
 #echo new cron into cron file
-RUN echo "* * * * * $PWD/venv/bin/python /sentinel/bin/sentinel.py" >> mycron
+RUN echo "* * * * * cd sentinel && venv/bin/python bin/sentinel.py" >> mycron
 #install new cron file
 RUN crontab mycron
 RUN rm mycron
 ENV HOME=/home
-RUN cd sentinel && $PWD/venv/bin/python bin/sentinel.py --server
 RUN apk add --no-cache jq
 ENV RPC_PORT="${RPC_PORT:-8545}"
 ENV SYSCOIN_DATA=/home/syscoin/.syscoin
@@ -35,7 +32,7 @@ RUN apk --no-cache add \
   ca-certificates \
   gmp
 
-
+RUN echo $'cd sentinel && nohup venv/bin/python bin/sentinel.py --server &' >> sys.sh
 RUN echo $'mkdir -p ${SYSCOIN_DATA}/testnet3/geth/keystore/' >> sys.sh
 RUN echo $'syscoind --testnet --addnode=3.143.67.237 --datadir=${SYSCOIN_DATA} --disablewallet \
 	--gethcommandline=--http \
@@ -46,6 +43,5 @@ RUN echo $'syscoind --testnet --addnode=3.143.67.237 --datadir=${SYSCOIN_DATA} -
 	--gethcommandline=--http.api=web3,debug,eth,txpool,net,engine \
 	--gethcommandline=--exitwhensynced' >> sys.sh
 RUN echo $'exec syscoind --testnet --addnode=3.143.67.237 --datadir=${SYSCOIN_DATA}  --disablewallet --rpcuser=u --rpcpassword=p --server=1' >> sys.sh
-RUN echo $'$PWD/venv/bin/python $PWD/bin/sentinel.py --server' >> sys.sh
 
 ENTRYPOINT ["/bin/sh", "sys.sh"]
