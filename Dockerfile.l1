@@ -4,11 +4,9 @@ FROM alpine:3.15
 ARG SENTINEL_REPO=https://github.com/syscoin/sentinel.git
 RUN apk add --no-cache gcc musl-dev linux-headers git python3 py-virtualenv rust
 RUN git clone ${SENTINEL_REPO}
-ADD . /sentinel
-RUN cd sentinel
-RUN virtualenv -p $(which python3) $PWD/venv
-RUN $PWD/venv/bin/python -m pip install --upgrade pip
-RUN $PWD/venv/bin/pip install -r /sentinel/requirements.txt
+RUN cd sentinel && virtualenv -p $(which python3) $PWD/venv
+RUN cd sentinel && $PWD/venv/bin/python -m pip install --upgrade pip
+RUN cd sentinel && $PWD/venv/bin/pip install -r requirements.txt
 #remove cron if exists
 RUN crontab -l | grep -v "\* \* \* \* \* $PWD/venv/bin/python $PWD/bin/sentinel.py" | crontab -
 #write out current crontab
@@ -18,7 +16,8 @@ RUN echo "* * * * * $PWD/venv/bin/python /sentinel/bin/sentinel.py" >> mycron
 #install new cron file
 RUN crontab mycron
 RUN rm mycron
-RUN $PWD/venv/bin/python /sentinel/bin/sentinel.py
+ENV HOME=/home
+RUN cd sentinel && $PWD/venv/bin/python bin/sentinel.py --server
 RUN apk add --no-cache jq
 ENV RPC_PORT="${RPC_PORT:-8545}"
 ENV SYSCOIN_DATA=/home/syscoin/.syscoin

@@ -94,9 +94,9 @@ def main():
         print("Please ensure correct database configuration.")
         sys.exit(1)
 
-    if not has_syscoin_conf():
-        print("Syscoin must be installed and configured, including JSONRPC access in syscoin.conf")
-        sys.exit(1)
+    #if not has_syscoin_conf():
+        #print("Syscoin must be installed and configured, including JSONRPC access in syscoin.conf")
+        #sys.exit(1)
 
 
 main()
