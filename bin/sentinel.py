@@ -139,6 +139,7 @@ def main():
     try:
         syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
     except FileNotFoundError:
+        syscoind = SyscoinDaemon()
         pass
     options = process_args()
 
