@@ -136,7 +136,10 @@ def poda_server_loop():
     web.run_app(app)
 
 def main():
-    syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
+    try:
+        syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
+    except FileNotFoundError:
+        pass
     options = process_args()
 
     # print version and return if "--version" is an argument
