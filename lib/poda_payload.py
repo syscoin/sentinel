@@ -6,6 +6,7 @@ import botocore
 from misc import printdbg
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'lib'))
 from bitcoinrpc.authproxy import JSONRPCException
+
 class PoDAPayload():
     bucketname = 'poda'
     def __init__(self, accountid, keyid, secret):
@@ -19,6 +20,24 @@ class PoDAPayload():
                 aws_access_key_id = keyid,
                 aws_secret_access_key = secret,
             )
+
+    @classmethod
+    def get_local_vh(self, vh):
+        import peewee
+        from models import Setting
+        try:
+            Setting.get(Setting.name == vh)
+        except (peewee.OperationalError, peewee.DoesNotExist, peewee.ProgrammingError):
+            printdbg("[info]: Can't get local vh...")
+            return False
+        return True
+
+    @classmethod
+    def set_local_vh(self, vh, height):
+        from models import Setting
+        localvh_setting, created = Setting.get_or_create(name=vh)
+        localvh_setting.value = height
+        localvh_setting.save()
 
     @classmethod
     def get_last_block(self):
@@ -42,7 +61,6 @@ class PoDAPayload():
     def send_blobs(self, syscoind):
         # get last processed block from gateway
         lastblockhash = self.get_last_block()
-        print("send_blobs last block hash: %s" % lastblockhash)
         # get prevCL info
         mediantimePrevCl = 0
         try:
@@ -57,6 +75,7 @@ class PoDAPayload():
             latestBlock = syscoind.rpc_command('getblock', latestHash)
             medianTimeTip = latestBlock.get('mediantime')
             mediantime = medianTimeTip
+            height = latestBlock.get('height')
             # loop over 7 hours from tip or until lastblock_height whichever is first
             while True:
                 # if prevCL - 7 hours for this block or if no prevCL then 7 hours from tip or if gateway's last block then break
@@ -74,24 +93,18 @@ class PoDAPayload():
                 for txid in items:
                     try:
                         blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True)  
-                        try:
-                            print("checking PoDA txid {0} {1}".format(txid, self.bucketname))
-                            self.s3.Object(self.bucketname, blobresponse.get('versionhash')).load()
-                        except botocore.exceptions.ClientError as e:
-                            if e.response['Error']['Code'] == "404":
-                                print("Found PoDA txid! storing in db: %s" % blobresponse.get('versionhash'))
-                                # send to DB backend
-                                object = self.s3.Object(self.bucketname, blobresponse.get('versionhash'))
-                                result = object.put(Body=blobresponse.get('data'))
-                                res = result.get('ResponseMetadata')
-                                if res.get('HTTPStatusCode') != 200:
-                                    print('Blob Not Uploaded')
-                                    return
-                                pass
-                            else:
-                                # Something else has gone wrong.
-                                print("Unable to check for vh existance from backend: %s" % e.message)
-                                raise
+                        vh = blobresponse.get('versionhash')
+                        if self.get_local_vh(vh) is True:
+                            continue
+                        print("Found PoDA txid! storing in db: %s" % vh)
+                        # send to DB backend
+                        object = self.s3.Object(self.bucketname,vh)
+                        result = object.put(Body=blobresponse.get('data'))
+                        res = result.get('ResponseMetadata')
+                        if res.get('HTTPStatusCode') != 200:
+                            print('Blob Not Uploaded')
+                            return
+                        self.set_local_vh(vh, height)
                     except JSONRPCException:
                         continue
                 # used to check against last cached block to know when to stop processing

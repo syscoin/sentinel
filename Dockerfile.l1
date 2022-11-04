@@ -10,7 +10,7 @@ RUN cd sentinel && venv/bin/pip install -r requirements.txt
 #write out current crontab
 RUN crontab -l > mycron
 #echo new cron into cron file
-RUN echo "*/1 * * * * cd sentinel && ./venv/bin/python bin/sentinel.py 2>&1 >> sentinel-cron.log" >> mycron
+RUN echo "* * * * * cd sentinel && ./venv/bin/python bin/sentinel.py 2>&1 >> sentinel-cron.log" >> mycron
 #install new cron file
 RUN crontab mycron
 RUN rm mycron
