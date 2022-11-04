@@ -126,13 +126,16 @@ def is_syscoind_port_open(syscoind):
 
     return port_open
 
-async def handle(request):
+async def handle_vh(request):
     vh = request.match_info.get('vh')
     return web.Response(text=config.poda_payload.get_data(vh))
 
+async def handle_lastblock(request):
+    return web.Response(text=config.poda_payload.get_last_block())
+
 def poda_server_loop():
     app = web.Application()
-    app.add_routes([web.get('/vh/{vh}', handle)])
+    app.add_routes([web.get('/vh/{vh}', handle_vh), web.get('/lastblock', handle_lastblock)])
     web.run_app(app)
 
 def main():
