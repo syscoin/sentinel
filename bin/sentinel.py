@@ -140,7 +140,8 @@ def main():
         syscoind = SyscoinDaemon.from_syscoin_conf(config.syscoin_conf)
     except FileNotFoundError:
         syscoind = SyscoinDaemon()
-        syscoind.creds.port = 8370 if (config.network == 'mainnet') else 18370
+        defport = 8370 if (config.network == 'mainnet') else 18370
+        syscoind.creds.set('port', defport)
         pass
     options = process_args()
 
