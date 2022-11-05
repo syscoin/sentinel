@@ -62,8 +62,11 @@ class PoDAPayload():
         # get prevCL info
         mediantimePrevCl = 0
         try:
-            prevCLHash = syscoind.rpc_command('getchainlocks').get('previous_chainlock').get('blockhash')
-            mediantimePrevCl = syscoind.rpc_command('getblock', prevCLHash).get('mediantime')
+            cl = syscoind.rpc_command('getchainlocks')
+            if cl is not None:
+                prevCL = cl.get('previous_chainlock')
+                if prevCL is not None:
+                    mediantimePrevCl = syscoind.rpc_command('getblock', prevCL.get('blockhash')).get('mediantime')
         except JSONRPCException as e:
             print("Unable to fetch prev CL: %s" % e.message)
             mediantimePrevCl = 0

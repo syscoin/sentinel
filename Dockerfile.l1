@@ -44,6 +44,6 @@ RUN echo $'syscoind --testnet --addnode=3.143.67.237 --datadir=${SYSCOIN_DATA} -
 	--gethcommandline=--http.port="$RPC_PORT" \
 	--gethcommandline=--http.api=web3,debug,eth,txpool,net,engine \
 	--gethcommandline=--exitwhensynced' >> sys.sh
-RUN echo $'exec syscoind --testnet --addnode=3.143.67.237 --datadir=${SYSCOIN_DATA}  --disablewallet --rpcuser=u --rpcpassword=p --server=1' >> sys.sh
+RUN echo $'exec syscoind --testnet --addnode=3.143.67.237 --datadir=${SYSCOIN_DATA} --disablewallet --rpcuser=u --rpcpassword=p --server=1 --rpcallowip=127.0.0.1' >> sys.sh
 
 ENTRYPOINT ["/bin/sh", "sys.sh"]
