@@ -31,7 +31,8 @@ RUN apk --no-cache add \
   libzmq \
   su-exec \
   ca-certificates \
-  gmp
+  gmp \
+  sqlite-dev
 
 RUN echo $'cd sentinel && nohup venv/bin/python bin/sentinel.py --server &' >> sys.sh
 RUN echo $'mkdir -p ${SYSCOIN_DATA}/testnet3/geth/keystore/' >> sys.sh
