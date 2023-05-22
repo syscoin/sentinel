@@ -118,7 +118,7 @@ class PoDAPayload():
                                 current_datetime = datetime.datetime.now()
                                 # send to DB backend
                                 res = self.storage_provider.uploadBlob(
-                                    io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt")
+                                    io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
                                 if res.get('HTTPStatusCode') != 200:
                                     print('Blob Not Uploaded')
                                     return
