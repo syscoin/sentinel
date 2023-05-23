@@ -24,7 +24,6 @@ class PoDAPayload():
             raise Exception(
                 "No token provided: Please provide a token or set the LIGHTHOUSE_TOKEN environment variable"
             )
-
         self.storage_provider = Lighthouse(_token)
 
     @classmethod
@@ -118,7 +117,9 @@ class PoDAPayload():
                                 current_datetime = datetime.datetime.now()
                                 # send to DB backend
                                 res = self.storage_provider.uploadBlob(
-                                    io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
+                                    io.BytesIO(blobresponse.get('data').encode("utf-8")),
+                                    f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt",
+                                     blobresponse.get('versionhash'))
                                 if res.get('HTTPStatusCode') != 200:
                                     print('Blob Not Uploaded')
                                     return
