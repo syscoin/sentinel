@@ -12,12 +12,24 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'lib'))
 
 
 class PoDAPayload():
+    bucketname = 'poda'
 
-    def __init__(self, token: str):
-        self.connect_db(token)
+    def __init__(self, accountid: str, keyid: str, secret: str, token: str):
+        self.connect_db_lighthouse(token)
+        self.connect_db(accountid, keyid, secret)
 
     @classmethod
-    def connect_db(self, token):
+    def connect_db(self, accountid, keyid, secret):
+        if accountid != '' and keyid != '' and secret != '':
+            self.s3 = boto3.resource('s3',
+                                     endpoint_url='https://{0}.r2.cloudflarestorage.com'.format(
+                                         accountid),
+                                     aws_access_key_id=keyid,
+                                     aws_secret_access_key=secret,
+                                     )
+
+    @classmethod
+    def connect_db_lighthouse(self, token):
         # Retrieve the token from environment variable if not provided
         _token = token or os.environ.get("LIGHTHOUSE_TOKEN", "")
         if not _token:
@@ -109,26 +121,33 @@ class PoDAPayload():
                             try:
                                 print("checking PoDA txid {0} {1}".format(
                                     txid, self.bucketname))
-                                self.get_data(blobresponse.get(
-                                    'versionhash'))
-                            except:
-                                print("Found PoDA txid! storing in db: %s" %
-                                      blobresponse.get('versionhash'))
-                                current_datetime = datetime.datetime.now()
-                                # send to DB backend
-                                res = self.storage_provider.uploadBlob(
-                                    io.BytesIO(blobresponse.get('data').encode("utf-8")),
-                                    f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt",
-                                     blobresponse.get('versionhash'))
-                                if res.get('HTTPStatusCode') != 200:
-                                    print('Blob Not Uploaded')
-                                    return
-                                pass
-                            else:
-                                # Something else has gone wrong.
-                                print(
-                                    "Unable to check for vh existance from backend: %s" % e.message)
-                                raise
+                                self.s3.Object(self.bucketname, blobresponse.get(
+                                    'versionhash')).load()
+                            except botocore.exceptions.ClientError as e:
+                                if e.response['Error']['Code'] == "404":
+                                    print("Found PoDA txid! storing in db: %s" %
+                                          blobresponse.get('versionhash'))
+                                    # send to DB backend
+                                    object = self.s3.Object(
+                                        self.bucketname, blobresponse.get('versionhash'))
+                                    result = object.put(
+                                        Body=blobresponse.get('data'))
+                                    # send to DB backend
+                                    lighthouse_res = self.storage_provider.uploadBlob(
+                                        io.BytesIO(blobresponse.get(
+                                            'data').encode("utf-8")),
+                                        f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt",
+                                        blobresponse.get('versionhash'))
+                                    res = result.get('ResponseMetadata')
+                                    if res.get('HTTPStatusCode') != 200:
+                                        print('Blob Not Uploaded')
+                                        return
+                                    pass
+                                else:
+                                    # Something else has gone wrong.
+                                    print(
+                                        "Unable to check for vh existance from backend: %s" % e.message)
+                                    raise
                         except JSONRPCException:
                             continue
                 # used to check against last cached block to know when to stop processing
@@ -144,15 +163,22 @@ class PoDAPayload():
 
     @classmethod
     def get_data(self, vh):
-
-        tagData = self.storage_provider.getTagged(vh)
-        # The object does exist.
-        if (tagData.get("data") is None):
-            printdbg("Data does not exist for vh: %s" % vh)
-            raise
-        else:
-            cid = tagData.get(
-                "data").get("cid")
-            data, _ = self.storage_provider.download(
-                cid)
-            return data.decode('utf-8')
+        obj = ''
+        try:
+            obj = self.s3.Object(self.bucketname, vh).get()
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404" or e.response['Error']['Code'] == 'NoSuchKey':
+                tagData = self.storage_provider.getTagged(vh)
+                # The object does exist.
+                if (tagData.get("data") is None):
+                    printdbg("Data does not exist for vh: %s" % vh)
+                    raise
+                else:
+                    cid = tagData.get(
+                        "data").get("cid")
+                    data, _ = self.storage_provider.download(
+                        cid)
+                    return data.decode('utf-8')
+            else:
+                # Something else has gone wrong.
+                raise
