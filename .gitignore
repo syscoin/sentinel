@@ -100,3 +100,4 @@ ignore/
 
 # SQLite databases
 database/*.db
+.vscode
