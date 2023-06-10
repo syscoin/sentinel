@@ -166,6 +166,7 @@ class PoDAPayload():
         obj = ''
         try:
             obj = self.s3.Object(self.bucketname, vh).get()
+            return obj['Body'].read().decode('utf-8')
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "404" or e.response['Error']['Code'] == 'NoSuchKey':
                 tagData = self.storage_provider.getTagged(vh)
