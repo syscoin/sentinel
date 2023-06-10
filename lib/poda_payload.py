@@ -105,7 +105,7 @@ class PoDAPayload():
                     items = latestBlock.get('tx')
                     for txid in items:
                         try:
-                            blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True)
+                            blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True)  
                             try:
                                 print("checking PoDA txid {0} {1}".format(txid, self.bucketname))
                                 self.s3.Object(self.bucketname, blobresponse.get('versionhash')).load()
@@ -150,7 +150,7 @@ class PoDAPayload():
                 # The object does exist.
                 if (tagData.get("data") is None):
                     printdbg("Data does not exist for vh: %s" % vh)
-                    return ""
+                    return ''
                 else:
                     cid = tagData.get("data").get("cid")
                     data, _ = self.storage_provider.download(cid)
