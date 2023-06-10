@@ -173,7 +173,7 @@ class PoDAPayload():
                 # The object does exist.
                 if (tagData.get("data") is None):
                     printdbg("Data does not exist for vh: %s" % vh)
-                    raise
+                    return ""
                 else:
                     cid = tagData.get(
                         "data").get("cid")
