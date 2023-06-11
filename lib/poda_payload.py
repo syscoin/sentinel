@@ -144,17 +144,13 @@ class PoDAPayload():
         try:
             obj = self.s3.Object(self.bucketname, vh).get()
             return obj['Body'].read().decode('utf-8')
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "404" or e.response['Error']['Code'] == 'NoSuchKey':
-                tagData = self.storage_provider.getTagged(vh)
-                # The object does exist.
-                if (tagData.get("data") is None):
-                    printdbg("Data does not exist for vh: %s" % vh)
-                    return ''
-                else:
-                    cid = tagData.get("data").get("cid")
-                    data, _ = self.storage_provider.download(cid)
-                    return data.decode('utf-8')
+        except:
+            # Check if the object does exist in lighthouse.
+            tagData = self.storage_provider.getTagged(vh)
+            if (tagData.get("data") is None):
+                printdbg("Data does not exist for vh: %s" % vh)
+                return ''
             else:
-                # Something else has gone wrong.
-                raise
+                cid = tagData.get("data").get("cid")
+                data, _ = self.storage_provider.download(cid)
+                return data.decode('utf-8')
