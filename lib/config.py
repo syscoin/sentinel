@@ -3,6 +3,7 @@
 """
 import sys
 import os
+import re
 from syscoin_config import SyscoinConfig
 from poda_payload import PoDAPayload 
 
@@ -12,6 +13,29 @@ default_sentinel_config = os.path.normpath(
 sentinel_config_file = os.environ.get('SENTINEL_CONFIG', default_sentinel_config)
 sentinel_cfg = SyscoinConfig.tokenize(sentinel_config_file)
 sentinel_version = "1.5.0"
+
+
+def parse_env():
+    """parse .env file"""
+    try:
+        with open(".env", "r") as f:
+            for line in f.readlines():
+                line = line.strip()
+                if line.startswith("#") or not line:
+                    continue
+                if "=" not in line:
+                    print(f"Invalid line: {line}")
+                    continue
+                key, value = map(str.strip, line.split("=", 1))
+                if not re.match(r'^[A-Z_][A-Z0-9_]*$', key):
+                    print(f"Invalid key: {key}")
+                    continue
+                os.environ[key] = value
+    except FileNotFoundError:
+        print("No .env file found")
+        print("Defaulting to preset environment variables...")
+    except IOError as e:
+        print(f"Error reading .env file: {e}")
 
 
 def get_syscoin_conf():
@@ -40,6 +64,9 @@ def get_poda_db_account_id():
 
 def get_poda_db_key_id():
     return os.environ.get('PODA_DB_KEY_ID')
+
+def get_lighthouse_token():
+    return os.environ.get('LIGHTHOUSE_TOKEN')
 
 def get_poda_db_access_key():
     return os.environ.get('PODA_DB_ACCESS_KEY')
@@ -96,7 +123,7 @@ def get_db_conn():
 
     return db
 
-
+parse_env()
 syscoin_conf = get_syscoin_conf()
 network = get_network()
 rpc_host = get_rpchost()
@@ -104,4 +131,5 @@ db = get_db_conn()
 poda_db_account_id = get_poda_db_account_id()
 poda_db_key_id = get_poda_db_key_id()
 poda_db_access_key = get_poda_db_access_key()
-poda_payload = PoDAPayload(poda_db_account_id, poda_db_key_id, poda_db_access_key)
+lh_token =get_lighthouse_token()
+poda_payload = PoDAPayload(poda_db_account_id, poda_db_key_id, poda_db_access_key,lh_token)
