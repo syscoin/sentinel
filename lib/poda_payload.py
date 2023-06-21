@@ -14,7 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'lib'))
 class PoDAPayload():
     bucketname = 'poda'
 
-    def __init__(self, accountid: str, keyid: str, secret: str, token: str):
+    def __init__(self, accountid: str, keyid: str, secret: str, token: str="placeholder"):
         self.connect_lighthouse(token)
         self.connect_db(accountid, keyid, secret)
 
@@ -116,7 +116,10 @@ class PoDAPayload():
                                     object = self.s3.Object(self.bucketname, blobresponse.get('versionhash'))
                                     result = object.put(Body=blobresponse.get('data'))
                                     # send data string to lighthouse service as Byte Stream
-                                    lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
+                                    try:
+                                        lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
+                                    except Exception as e:
+                                        print("An error Occured: %s" % str(e))
                                     res = result.get('ResponseMetadata')
                                     if res.get('HTTPStatusCode') != 200:
                                         print('Blob Not Uploaded')
