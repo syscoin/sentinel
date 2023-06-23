@@ -118,6 +118,8 @@ class PoDAPayload():
                                     # send data string to lighthouse service as Byte Stream
                                     try:
                                         lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
+                                        if !('data' in lighthouse_res):
+                                            print('Blob Not Uploaded to Lighthouse')
                                     except Exception as e:
                                         print("An error Occured: %s" % str(e))
                                     res = result.get('ResponseMetadata')

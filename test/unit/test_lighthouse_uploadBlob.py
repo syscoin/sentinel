@@ -5,10 +5,10 @@ import os
 import re
 
 
-def parse_env():
+def parse_env(envfile=".env"):
     """parse .env file"""
     try:
-        with open(".env", "r") as f:
+        with open(envfile, "r") as f:
             for line in f.readlines():
                 line = line.strip()
                 if line.startswith("#") or not line:
@@ -45,6 +45,6 @@ def test_uploadBlob_for_string():
     filehash= res.get("data").get("Hash")
     assert type(res.get("data")) is type({})
     assert len(res.get("data").get("Hash"))>=46
-
+    assert 'data' in res
     tagData = l.getTagged(proposed_hash())
     assert filehash == tagData.get("data").get("cid")
