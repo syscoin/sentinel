@@ -105,7 +105,16 @@ class PoDAPayload():
                     items = latestBlock.get('tx')
                     for txid in items:
                         try:
-                            blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True)  
+                            blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True) 
+                            # send data string to lighthouse service as Byte Stream
+                            try:
+                                tagData = self.storage_provider.getTagged(blobresponse.get('versionhash'))
+                                if (tagData.get("data") is None):
+                                    lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
+                                    if !('data' in lighthouse_res):
+                                        print('Blob Not Uploaded to Lighthouse')
+                            except Exception as e:
+                                print("An error Occured: %s" % str(e))
                             try:
                                 print("checking PoDA txid {0} {1}".format(txid, self.bucketname))
                                 self.s3.Object(self.bucketname, blobresponse.get('versionhash')).load()
@@ -115,13 +124,6 @@ class PoDAPayload():
                                     # send to DB backend
                                     object = self.s3.Object(self.bucketname, blobresponse.get('versionhash'))
                                     result = object.put(Body=blobresponse.get('data'))
-                                    # send data string to lighthouse service as Byte Stream
-                                    try:
-                                        lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
-                                        if !('data' in lighthouse_res):
-                                            print('Blob Not Uploaded to Lighthouse')
-                                    except Exception as e:
-                                        print("An error Occured: %s" % str(e))
                                     res = result.get('ResponseMetadata')
                                     if res.get('HTTPStatusCode') != 200:
                                         print('Blob Not Uploaded')
