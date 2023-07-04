@@ -14,7 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'lib'))
 class PoDAPayload():
     bucketname = 'poda'
 
-    def __init__(self, accountid: str, keyid: str, secret: str, token: str="placeholder"):
+    def __init__(self, accountid: str, keyid: str, secret: str, token: str):
         self.connect_lighthouse(token)
         self.connect_db(accountid, keyid, secret)
 
@@ -30,7 +30,7 @@ class PoDAPayload():
 
     @classmethod
     def connect_lighthouse(self, token):
-        self.storage_provider = Lighthouse(token)
+        self.storage_provider = None if (token=="" or token is None) else Lighthouse(token)
 
     @classmethod
     def get_local_block_processed(self, vh):
@@ -107,14 +107,15 @@ class PoDAPayload():
                         try:
                             blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True) 
                             # send data string to lighthouse service as Byte Stream
-                            try:
-                                tagData = self.storage_provider.getTagged(blobresponse.get('versionhash'))
-                                if (tagData.get("data") is None):
-                                    lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
-                                    if !('data' in lighthouse_res):
-                                        print('Blob Not Uploaded to Lighthouse')
-                            except Exception as e:
-                                print("An error Occured: %s" % str(e))
+                            if self.storage_provider:
+                                try:
+                                    tagData = self.storage_provider.getTagged(blobresponse.get('versionhash'))
+                                    if (tagData.get("data") is None):
+                                        lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
+                                        if (lighthouse_res.get("data") is None):
+                                            print('Blob Not Uploaded to Lighthouse')
+                                except Exception as e:
+                                    print("An error Occured: %s" % str(e))
                             try:
                                 print("checking PoDA txid {0} {1}".format(txid, self.bucketname))
                                 self.s3.Object(self.bucketname, blobresponse.get('versionhash')).load()
@@ -153,11 +154,14 @@ class PoDAPayload():
             return obj['Body'].read().decode('utf-8')
         except:
             # Check if the object does exist in lighthouse.
-            tagData = self.storage_provider.getTagged(vh)
-            if (tagData.get("data") is None):
-                printdbg("Data does not exist for vh: %s" % vh)
-                return ''
+            if self.storage_provider:
+                tagData = self.storage_provider.getTagged(vh)
+                if (tagData.get("data") is None):
+                    printdbg("Data does not exist for vh: %s" % vh)
+                    return ''
+                else:
+                    cid = tagData.get("data").get("cid")
+                    data, _ = self.storage_provider.download(cid)
+                    return data.decode('utf-8')
             else:
-                cid = tagData.get("data").get("cid")
-                data, _ = self.storage_provider.download(cid)
-                return data.decode('utf-8')
+                return ''
