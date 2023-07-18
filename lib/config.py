@@ -5,7 +5,7 @@ import sys
 import os
 import re
 from syscoin_config import SyscoinConfig
-from poda_payload import PoDAPayload 
+from poda_payload import PoDAPayload
 
 default_sentinel_config = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '../sentinel.conf')
@@ -60,16 +60,16 @@ def get_network():
     return sentinel_cfg.get('network', 'mainnet')
 
 def get_poda_db_account_id():
-    return os.environ.get('PODA_DB_ACCOUNT_ID')
+    return os.environ.get('PODA_DB_ACCOUNT_ID', '')
 
 def get_poda_db_key_id():
-    return os.environ.get('PODA_DB_KEY_ID')
-
-def get_lighthouse_token():
-    return os.environ.get('LIGHTHOUSE_TOKEN')
+    return os.environ.get('PODA_DB_KEY_ID', '')
 
 def get_poda_db_access_key():
-    return os.environ.get('PODA_DB_ACCESS_KEY')
+    return os.environ.get('PODA_DB_ACCESS_KEY', '')
+
+def get_lighthouse_token():
+    return os.environ.get('LIGHTHOUSE_TOKEN', '')
 
 def get_rpchost():
     return sentinel_cfg.get('rpchost', '127.0.0.1')

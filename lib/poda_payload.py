@@ -11,6 +11,12 @@ from misc import printdbg
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'lib'))
 
 
+std_print = print
+
+def print(*args, **kwargs):
+    std_print(datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), *args, **kwargs)
+
+
 class PoDAPayload():
     bucketname = 'poda'
 
@@ -105,7 +111,7 @@ class PoDAPayload():
                     items = latestBlock.get('tx')
                     for txid in items:
                         try:
-                            blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True) 
+                            blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True)
                             # send data string to lighthouse service as Byte Stream
                             if self.storage_provider:
                                 try:
