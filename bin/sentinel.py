@@ -11,6 +11,7 @@ from models import VoteSignals, VoteOutcomes, Transient
 import socket
 from misc import printdbg
 import time
+import datetime
 from bitcoinrpc.authproxy import JSONRPCException
 import signal
 import atexit
@@ -18,6 +19,13 @@ import random
 from scheduler import Scheduler
 import argparse
 from aiohttp import web
+
+
+std_print = print
+
+def print(*args, **kwargs):
+    std_print(datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), *args, **kwargs)
+
 
 # sync syscoind gobject list with our local relational DB backend
 def perform_syscoind_object_sync(syscoind):
@@ -170,6 +178,8 @@ def main():
     # send PoDA if configured
     attempt_poda_submission(syscoind)
 
+    # print("PoDA DB Account ID not set, using MN code path.")
+
     # ensure valid masternode
     if not syscoind.is_masternode():
         printdbg("Invalid Masternode Status, cannot continue.")
@@ -237,7 +247,7 @@ def process_args():
     parser.add_argument('-s', '--server',
                         action='store_true',
                         help='PoDA server',
-                        dest='server')                    
+                        dest='server')
     parser.add_argument('-v', '--version',
                         action='store_true',
                         help='Print the version (Syscoin Sentinel vX.X.X) and exit')
