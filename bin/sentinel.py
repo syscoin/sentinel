@@ -178,7 +178,7 @@ def main():
     # send PoDA if configured
     attempt_poda_submission(syscoind)
 
-    print("PoDA DB Account ID not set, using MN code path.")
+    # print("PoDA DB Account ID not set, using MN code path.")
 
     # ensure valid masternode
     if not syscoind.is_masternode():
