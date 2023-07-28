@@ -112,22 +112,25 @@ class PoDAPayload():
                     for txid in items:
                         try:
                             blobresponse = syscoind.rpc_command('getnevmblobdata', txid, True)
+                            print("checking PoDA txid {0} {1}".format(txid, self.bucketname))
                             # send data string to lighthouse service as Byte Stream
                             if self.storage_provider:
+                                printdbg("Lighthouse storage provider active")
                                 try:
                                     tagData = self.storage_provider.getTagged(blobresponse.get('versionhash'))
                                     if (tagData.get("data") is None):
+                                        print("Found PoDA txid, storing to Lighthouse: %s" % blobresponse.get('versionhash'))
                                         lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
                                         if (lighthouse_res.get("data") is None):
                                             print('Blob Not Uploaded to Lighthouse')
                                 except Exception as e:
                                     print("An error Occured: %s" % str(e))
                             try:
-                                print("checking PoDA txid {0} {1}".format(txid, self.bucketname))
+#                                print("checking PoDA txid {0} {1}".format(txid, self.bucketname))
                                 self.s3.Object(self.bucketname, blobresponse.get('versionhash')).load()
                             except botocore.exceptions.ClientError as e:
                                 if e.response['Error']['Code'] == "404":
-                                    print("Found PoDA txid! storing in db: %s" % blobresponse.get('versionhash'))
+                                    print("Found PoDA txid, storing in db: %s" % blobresponse.get('versionhash'))
                                     # send to DB backend
                                     object = self.s3.Object(self.bucketname, blobresponse.get('versionhash'))
                                     result = object.put(Body=blobresponse.get('data'))
