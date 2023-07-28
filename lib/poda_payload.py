@@ -120,6 +120,7 @@ class PoDAPayload():
                                     tagData = self.storage_provider.getTagged(blobresponse.get('versionhash'))
                                     if (tagData.get("data") is None):
                                         print("Found PoDA txid, storing to Lighthouse: %s" % blobresponse.get('versionhash'))
+                                        current_datetime = datetime.datetime.now(datetime.timezone.utc)
                                         lighthouse_res = self.storage_provider.uploadBlob(io.BytesIO(blobresponse.get('data').encode("utf-8")), f"{current_datetime.strftime('%Y-%m-%d %H:%M')}-{blobresponse.get('versionhash')}-{txid}.txt", blobresponse.get('versionhash'))
                                         if (lighthouse_res.get("data") is None):
                                             print('Blob Not Uploaded to Lighthouse')
