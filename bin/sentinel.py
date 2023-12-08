@@ -175,22 +175,20 @@ def main():
         print("syscoind not synced with network! Awaiting full sync before running Sentinel.")
         return
 
-    # send PoDA if configured
-    attempt_poda_submission(syscoind)
-
-    # print("PoDA DB Account ID not set, using MN code path.")
-
-    # ensure valid masternode
-    if not syscoind.is_masternode():
-        printdbg("Invalid Masternode Status, cannot continue.")
-        return
-
     # register a handler if SENTINEL_DEBUG is set
     if os.environ.get('SENTINEL_DEBUG', None):
         import logging
         logger = logging.getLogger('peewee')
         logger.setLevel(logging.DEBUG)
         logger.addHandler(logging.StreamHandler())
+
+    # send PoDA if configured
+    attempt_poda_submission(syscoind)
+
+    # ensure valid masternode
+    if not syscoind.is_masternode():
+        printdbg("Invalid Masternode Status, cannot continue.")
+        return
 
     if options.bypass:
         # bypassing scheduler, remove the scheduled event

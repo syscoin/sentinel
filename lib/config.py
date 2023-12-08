@@ -4,6 +4,7 @@
 import sys
 import os
 import re
+import datetime
 from syscoin_config import SyscoinConfig
 from poda_payload import PoDAPayload
 
@@ -13,6 +14,17 @@ default_sentinel_config = os.path.normpath(
 sentinel_config_file = os.environ.get('SENTINEL_CONFIG', default_sentinel_config)
 sentinel_cfg = SyscoinConfig.tokenize(sentinel_config_file)
 sentinel_version = "1.5.0"
+
+
+std_print = print
+
+def print(*args, **kwargs):
+    std_print(datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), *args, **kwargs)
+
+# event handler for SENTINEL_DEBUG not registered yet, so simulate it
+def printdbg(*args, **kwargs):
+    if os.environ.get('SENTINEL_DEBUG', None):
+        std_print(datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"), *args, **kwargs)
 
 
 def parse_env():
@@ -32,8 +44,8 @@ def parse_env():
                     continue
                 os.environ[key] = value
     except FileNotFoundError:
-        print("No .env file found")
-        print("Defaulting to preset environment variables...")
+        printdbg("No .env file found")
+        printdbg("Defaulting to preset environment variables...")
     except IOError as e:
         print(f"Error reading .env file: {e}")
 
@@ -132,4 +144,8 @@ poda_db_account_id = get_poda_db_account_id()
 poda_db_key_id = get_poda_db_key_id()
 poda_db_access_key = get_poda_db_access_key()
 lh_token =get_lighthouse_token()
+if lh_token == '':
+    printdbg("Lighthouse token not set.")
+else :
+    printdbg("Lighthouse token found.")
 poda_payload = PoDAPayload(poda_db_account_id, poda_db_key_id, poda_db_access_key,lh_token)
